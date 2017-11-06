@@ -34,6 +34,5 @@
 # Txt files
 *.txt
 
-#QtCreator files
-*.pro
+#QtCreator user files
 *.pro.user

@@ -2,7 +2,6 @@
 #define COMBINATION_H
 #include <iostream>
 #include <iterator>
-#include <vector>
 #include <cstdlib>
 #include <vector>
 #endif // COMBINATION_H

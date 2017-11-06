@@ -31,9 +31,7 @@ private:
 
     void FSupdateButtonState(void);
     void FSsetButtonState(bool state);
-    std::vector<std::vector<int>> makeCombi(int n, int k);
-    void makeCombiUtil(std::vector<std::vector<int> >& ans, std::vector<int>& tmp, int n, int left, int k);
-
+    void printCombinations(std::vector<std::vector<int>> &arrayOfCombinations);
 
 private slots:
     void on_FSpushButtonOpenFile_clicked();
