@@ -8,7 +8,7 @@
 
 
 
-namespace Propability {
+namespace Math {
     class Combinations;
 }
 

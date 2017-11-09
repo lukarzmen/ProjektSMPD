@@ -30,14 +30,15 @@ SOURCES += main.cpp\
     database.cpp \
     object.cpp \
     combination.cpp \
-    ficherelement.cpp
+    ficherelement.cpp \
+    matrix.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
     object.h \
-    matrixutil.hpp \
     combination.h \
-    ficherelement.h
+    ficherelement.h \
+    matrix.h
 
 FORMS    += mainwindow.ui
 

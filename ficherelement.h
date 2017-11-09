@@ -7,7 +7,7 @@
 
 
 
-namespace Statistics {
+namespace Math {
     class FicherElement;
 }
 
