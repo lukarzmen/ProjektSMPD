@@ -1,9 +1,4 @@
 #include "matrix.h"
-#include <boost>
-
-namespace bnu = boost::numeric::ublas;
-
-matrix::matrix(){}
 
 int determinant_sign(const bnu::permutation_matrix<std::size_t>& pm)
 {

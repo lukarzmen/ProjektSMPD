@@ -2,20 +2,18 @@
 #include "ui_mainwindow.h"
 #include <vector>
 #include "iostream"
-#include "combination.h"
-#include "ficherelement.h"
 #include <QImage>
 #include <QDebug>
 
 
-
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setWindowTitle("Projekt Statystyczne Metody Przetwarzania Danych");
+    this->setWindowTitle("SMPD Project by L. Medyk");
     this->setWindowIcon(QIcon(":/icons/icon.png"));
     FSupdateButtonState();
 }
@@ -61,10 +59,10 @@ void MainWindow::FSsetButtonState(bool state)
 void MainWindow::on_FSpushButtonOpenFile_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Open TextFile"), "", tr("Texts Files (*.txt)"));
+                                                    tr("Open data file"), "//", tr("Texts Files (*.txt)"));
 
     if ( !database.load(fileName.toStdString()) )
-        QMessageBox::warning(this, "Warning", "File corrupted !!!");
+        QMessageBox::warning(this, "Warning", "Cannot read file!!!");
     else
         QMessageBox::information(this, fileName, "File loaded !!!");
 
@@ -78,37 +76,26 @@ void MainWindow::on_FSpushButtonCompute_clicked()
     int numberOfClass = database.getNoClass();
     int numberOfFeatures = database.getNoFeatures();
 
-    Combinations* combinations = new Combinations();
-    std::vector<std::vector<int>> arrayOfCombinations = combinations->generateCombinations(numberOfFeatures, dimension);
-    delete combinations;
-    //for developer tests
-    printCombinations(arrayOfCombinations);
+    map<int,FicherElement> combinationsMap = getCombinationsMap(numberOfFeatures, dimension);
 
-    std::map<int,FicherElement> combinationsMap;
-
-    for (int i = 0; i < arrayOfCombinations.size(); i++)
-    {
-        FicherElement ficherElementToInsert = FicherElement(&arrayOfCombinations[i]);
-        combinationsMap.insert(std::pair<int, FicherElement>(i, ficherElementToInsert));
-    }
 
     if( ui->FSradioButtonFisher ->isChecked())
     {
         float minFischerValue = std::numeric_limits<float>::max();
         int minFischerMapKey = 0;
-
-        //todo: przeiterować po kombinacjach i wyliczyć dla każdej combination fischerValue
-        for (auto &combination : combinationsMap)
+        if (numberOfClass == 2)
         {
-            if (numberOfClass == 2)
-            {
-                float FLD = 0, tmp;
-                int max_ind = -1;
 
+            vector<Object> all_obj = database.getObjects();
+            vector<Object_model> objectModels = getObject_Models(all_obj);
+            //todo: przeiterować po kombinacjach i wyliczyć dla każdej combination fischerValue
+            for (auto &combination : combinationsMap)
+            {
                 //std::map<std::string, int> classNames = database.getClassNames();
-                const std::vector<int> *arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
-                const int* singleCombinationArray = arrayFeatureOfCombinations->data();
-                int singleCombinationArraySize = arrayFeatureOfCombinations->size();
+                const std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
+                const int* singleCombinationArray = arrayFeatureOfCombinations.data();
+                int singleCombinationArraySize = arrayFeatureOfCombinations.size();
+
 
                 for (uint i = 0; i < singleCombinationArraySize; ++i)
                 {
@@ -128,22 +115,18 @@ void MainWindow::on_FSpushButtonCompute_clicked()
                         classStds[it.first] = std::sqrt(classStds[it.first] / it.second - classAverages[it.first] * classAverages[it.first]);
                     });
 
-                    tmp = std::abs(classAverages[ database.getClassNames()[0] ] - classAverages[database.getClassNames()[1]]) / (classStds[database.getClassNames()[0]] + classStds[database.getClassNames()[1]]);
+                    //tmp = std::abs(classAverages[ database.getClassNames()[0] ] - classAverages[database.getClassNames()[1]]) / (classStds[database.getClassNames()[0]] + classStds[database.getClassNames()[1]]);
 
-                    if (tmp > FLD)
-                    {
-                        FLD = tmp;
-                        max_ind = i;
-                    }
                 }
 
-                ui->FStextBrowserDatabaseInfo->append("max_ind: "  +  QString::number(max_ind) + " " + QString::number(FLD));
-            }
-            float fischerValue = 0.0f;
-            if(fischerValue < minFischerValue)
-                minFischerValue = fischerValue;
+                //ui->FStextBrowserDatabaseInfo->append("max_ind: "  +  QString::number(max_ind) + " " + QString::number(FLD));
 
-            combination.second.setFischerValue(fischerValue);
+                float fischerValue = 0.0f;
+                if(fischerValue < minFischerValue)
+                    minFischerValue = fischerValue;
+
+                combination.second.setFischerValue(fischerValue);
+            }
         }
     }
 }
@@ -154,9 +137,9 @@ void MainWindow::on_FSpushButtonCompute_clicked()
 void MainWindow::on_FSpushButtonSaveFile_clicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Open TextFile"), "D:\\Users\\Krzysiu\\Documents\\Visual Studio 2015\\Projects\\SMPD\\SMPD\\Debug\\", tr("Texts Files (*.txt)"));
+                                                    tr("Open data file"), QDir::homePath(), tr("Texts files (*.txt)"));
 
-    QMessageBox::information(this, "My File", fileName);
+    QMessageBox::information(this, "My file", fileName);
     database.save(fileName.toStdString());
 }
 
@@ -197,8 +180,64 @@ void MainWindow::printCombinations(std::vector<std::vector<int>> &arrayOfCombina
             else
                 std::cout << ';' << endl;
         }
-
     }
+}
+
+map<int,FicherElement> MainWindow::getCombinationsMap(int numberOfFeatures, int dimension){
+    Combinations* combinations = new Combinations();
+    vector<vector<int>> arrayOfCombinations = combinations->generateCombinations(numberOfFeatures, dimension);
+    delete combinations;
+    //for developer tests
+    printCombinations(arrayOfCombinations);
+
+    map<int,FicherElement> combinationsMap;
+
+    for (int i = 0; i < arrayOfCombinations.size(); i++)
+    {
+        FicherElement ficherElementToInsert = FicherElement(arrayOfCombinations[i]);
+        combinationsMap.insert(pair<int, FicherElement>(i, ficherElementToInsert));
+    }
+
+    return combinationsMap;
+}
+
+vector<Object_model> MainWindow::getObject_Models(vector<Object> &databaseObjects){
+    map<string, vector<vector<float>>> classesWithFeatures;
+
+    for (uint i = 0; i < databaseObjects.size(); i++) {
+        string classNameKey = databaseObjects[i].getClassName();
+        vector<float> features = databaseObjects[i].getFeatures();
+
+        map<string,vector<vector<float>>>::iterator mapIterator = classesWithFeatures.find(classNameKey);
+        if(mapIterator == classesWithFeatures.end())
+        {
+            std::vector<std::vector<float>> newArrayOfFeatures;
+            newArrayOfFeatures.push_back(features);
+            pair<string, vector<vector<float>>> newMapElement = pair<string, vector<vector<float>>>(classNameKey, newArrayOfFeatures);
+            classesWithFeatures.insert(newMapElement);
+        }
+        else
+            mapIterator->second.push_back(features);
+    }
+
+    vector<Object_model> objects;
+    foreach (auto &classWithFeatures, classesWithFeatures) {
+        string className = classWithFeatures.first;
+        vector<std::vector<float>> arrayOfFeatures = classWithFeatures.second;
+        vector<float> featureAverages;
+        vector<float> featureStds;
+
+        float featuresSum = 0.0f;
+        for (uint i = 0; i < arrayOfFeatures.size(); ++i){
+
+            featuresSum = 0;
+        }
+        Object_model object_model = Object_model(className);
+        object_model.setFeatures(arrayOfFeatures);
+        objects.push_back(object_model);
+    }
+
+    return objects;
 }
 
 

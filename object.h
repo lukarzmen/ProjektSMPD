@@ -11,7 +11,6 @@ private:
     std::string className;
     std::vector<float> features;
 
-
 public:
 
     Object(const std::string &className, const std::vector<float> &features) :classID(-1), className(className), features(features)

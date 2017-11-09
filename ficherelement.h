@@ -16,13 +16,13 @@ class FicherElement
 public:
     FicherElement(){};
     ~FicherElement(){};
-    FicherElement(std::vector<int> *arrayOfCombinations);
+    FicherElement(std::vector<int> arrayOfCombinations);
     void setFischerValue(float fischerValue);
     float getFischerValue(void);
-   const std::vector<int> *getVectorOfFeatureCombinations();
+   const std::vector<int> getVectorOfFeatureCombinations();
 private:
     int id;
-    std::vector<int> *arrayOfCombinations;
+    std::vector<int> arrayOfCombinations;
     float fischerValue;
 };
 

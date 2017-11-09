@@ -11,8 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = SMPD
 TEMPLATE = app
 
-INCLUDEPATH += D:\boost_1_59_0\
-
+INCLUDEPATH += C:\boost_1_65_1\boost_1_65_1
+LIBS += "-LC:\boost_1_65_1\boost_1_65_1\libs"
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -31,14 +31,16 @@ SOURCES += main.cpp\
     object.cpp \
     combination.cpp \
     ficherelement.cpp \
-    matrix.cpp
+    matrix.cpp \
+    object_model.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
     object.h \
     combination.h \
     ficherelement.h \
-    matrix.h
+    matrix.h \
+    object_model.h
 
 FORMS    += mainwindow.ui
 
