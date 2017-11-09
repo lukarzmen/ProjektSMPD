@@ -31,16 +31,18 @@ SOURCES += main.cpp\
     object.cpp \
     combination.cpp \
     ficherelement.cpp \
-    matrix.cpp \
-    object_model.cpp
+    object_model.cpp \
+    fischer.cpp \
+    matrixutil.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
     object.h \
     combination.h \
     ficherelement.h \
-    matrix.h \
-    object_model.h
+    object_model.h \
+    fischer.h \
+    matrixutil.h
 
 FORMS    += mainwindow.ui
 

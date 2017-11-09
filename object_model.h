@@ -2,24 +2,18 @@
 #define OBJECT_MODEL_H
 #include <string>
 #include <vector>
+#include "matrixutil.h"
 
 using namespace std;
 class Object_model
 {
 public:
     Object_model(string className);
-
-    void setFeatureAverages(vector<float>);
-    void setFeatureStds(vector<float>);
-
-    const vector<vector<float>> getFeatures();
+    bnu::matrix<float> getFeatures();
     void setFeatures(vector<vector<float>> arrayOfFeatures);
 
-    const vector<float> getFeatureAverages();
-    const vector<float> getFeatureStds();
-
-    const float getFeatureAverageById(int feature_id);
-    const float getFeatureStdById(int feature_id);
+    vector<float> getFeature(int id);
+    getFeatureAverage(int id);
 
     const string getClassName();
 
@@ -28,10 +22,9 @@ public:
         return className == object.className;
     }
 private:
-    vector<std::vector<float>> arrayOfFeatures;
-    vector<float> featuresAverages;
-    vector<float> featuresStds;
+    bnu::matrix<float> arrayOfFeatures;
     string className;
+    matrixutil matrix;
 };
 
 #endif // OBJECT_MODEL_H

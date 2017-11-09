@@ -9,9 +9,8 @@
 #include <QtGui>
 #include <QMessageBox>
 #include "object_model.h"
-#include "combination.h"
 #include "ficherelement.h"
-
+#include "fischer.h"
 
 #include"database.h"
 
@@ -34,26 +33,16 @@ private:
 
     void FSupdateButtonState(void);
     void FSsetButtonState(bool state);
-    void printCombinations(std::vector<std::vector<int>> &arrayOfCombinations);
-    std::map<int,FicherElement> getCombinationsMap(int numberOfFeatures, int dimension);
-    vector<Object_model> getObject_Models(vector<Object> &databaseObjects);
+    Fischer fischer;
 
 private slots:
     void on_FSpushButtonOpenFile_clicked();
-
     void on_FSpushButtonCompute_clicked();
-
     void on_FSpushButtonSaveFile_clicked();
-
     void on_PpushButtonSelectFolder_clicked();
-
-
     void on_CpushButtonOpenFile_clicked();
-
     void on_CpushButtonSaveFile_clicked();
-
     void on_CpushButtonTrain_clicked();
-
     void on_CpushButtonExecute_clicked();
 
 private:

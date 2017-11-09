@@ -7,6 +7,7 @@
 
 
 using namespace std;
+namespace bnu = boost::numeric::ublas;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -76,7 +77,7 @@ void MainWindow::on_FSpushButtonCompute_clicked()
     int numberOfClass = database.getNoClass();
     int numberOfFeatures = database.getNoFeatures();
 
-    map<int,FicherElement> combinationsMap = getCombinationsMap(numberOfFeatures, dimension);
+    map<int,FicherElement> combinationsMap = fischer.getCombinationsMap(numberOfFeatures, dimension);
 
 
     if( ui->FSradioButtonFisher ->isChecked())
@@ -87,41 +88,34 @@ void MainWindow::on_FSpushButtonCompute_clicked()
         {
 
             vector<Object> all_obj = database.getObjects();
-            vector<Object_model> objectModels = getObject_Models(all_obj);
+            vector<Object_model> objectModels = fischer.getObject_Models(all_obj);
             //todo: przeiterować po kombinacjach i wyliczyć dla każdej combination fischerValue
             for (auto &combination : combinationsMap)
             {
                 //std::map<std::string, int> classNames = database.getClassNames();
                 const std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
-                const int* singleCombinationArray = arrayFeatureOfCombinations.data();
-                int singleCombinationArraySize = arrayFeatureOfCombinations.size();
 
+                float Sm, Sw;
 
-                for (uint i = 0; i < singleCombinationArraySize; ++i)
+                //wpakować macierze rozrzutu i średnie do obiektu
+                bnu::matrix<float> covarianceA;
+                bnu::matrix<float> covariannceB;
+                std::vector<float> meanA;
+                std::vector<float> meanB;
+
+                for (auto &feature : arrayFeatureOfCombinations)
                 {
-                    std::map<std::string, float> classAverages;
-                    std::map<std::string, float> classStds;
-
-                    int indexOfFeature = singleCombinationArray[i];
-                    for (auto const &ob : database.getObjects())
+                    for (auto const &ob : objectModels)
                     {
-                        classAverages[ob.getClassName()] += ob.getFeatures()[indexOfFeature];
-                        classStds[ob.getClassName()] += ob.getFeatures()[indexOfFeature] * ob.getFeatures()[indexOfFeature];
+                        int a =1;
+                        a--;
                     }
-
-                    std::for_each(database.getClassCounters().begin(), database.getClassCounters().end(), [&](const std::pair<std::string, int> &it)
-                    {
-                        classAverages[it.first] /= it.second;
-                        classStds[it.first] = std::sqrt(classStds[it.first] / it.second - classAverages[it.first] * classAverages[it.first]);
-                    });
-
-                    //tmp = std::abs(classAverages[ database.getClassNames()[0] ] - classAverages[database.getClassNames()[1]]) / (classStds[database.getClassNames()[0]] + classStds[database.getClassNames()[1]]);
-
                 }
 
+                float fischerValue = 0.0f;
+                fischerValue = Sm/Sw;
                 //ui->FStextBrowserDatabaseInfo->append("max_ind: "  +  QString::number(max_ind) + " " + QString::number(FLD));
 
-                float fischerValue = 0.0f;
                 if(fischerValue < minFischerValue)
                     minFischerValue = fischerValue;
 
@@ -167,78 +161,6 @@ void MainWindow::on_CpushButtonExecute_clicked()
 
 }
 
-void MainWindow::printCombinations(std::vector<std::vector<int>> &arrayOfCombinations){
-    int sizeOfCombinationsVectorsArray = arrayOfCombinations.size();
-    for (int i = 0; i < sizeOfCombinationsVectorsArray; i++)
-    {
-        int vectorSize = arrayOfCombinations[i].size();
-        for (int j = 0; j < vectorSize; j++)
-        {
-            std::cout << arrayOfCombinations.at(i).at(j);
-            if(j < vectorSize - 1)
-                std::cout << " ";
-            else
-                std::cout << ';' << endl;
-        }
-    }
-}
-
-map<int,FicherElement> MainWindow::getCombinationsMap(int numberOfFeatures, int dimension){
-    Combinations* combinations = new Combinations();
-    vector<vector<int>> arrayOfCombinations = combinations->generateCombinations(numberOfFeatures, dimension);
-    delete combinations;
-    //for developer tests
-    printCombinations(arrayOfCombinations);
-
-    map<int,FicherElement> combinationsMap;
-
-    for (int i = 0; i < arrayOfCombinations.size(); i++)
-    {
-        FicherElement ficherElementToInsert = FicherElement(arrayOfCombinations[i]);
-        combinationsMap.insert(pair<int, FicherElement>(i, ficherElementToInsert));
-    }
-
-    return combinationsMap;
-}
-
-vector<Object_model> MainWindow::getObject_Models(vector<Object> &databaseObjects){
-    map<string, vector<vector<float>>> classesWithFeatures;
-
-    for (uint i = 0; i < databaseObjects.size(); i++) {
-        string classNameKey = databaseObjects[i].getClassName();
-        vector<float> features = databaseObjects[i].getFeatures();
-
-        map<string,vector<vector<float>>>::iterator mapIterator = classesWithFeatures.find(classNameKey);
-        if(mapIterator == classesWithFeatures.end())
-        {
-            std::vector<std::vector<float>> newArrayOfFeatures;
-            newArrayOfFeatures.push_back(features);
-            pair<string, vector<vector<float>>> newMapElement = pair<string, vector<vector<float>>>(classNameKey, newArrayOfFeatures);
-            classesWithFeatures.insert(newMapElement);
-        }
-        else
-            mapIterator->second.push_back(features);
-    }
-
-    vector<Object_model> objects;
-    foreach (auto &classWithFeatures, classesWithFeatures) {
-        string className = classWithFeatures.first;
-        vector<std::vector<float>> arrayOfFeatures = classWithFeatures.second;
-        vector<float> featureAverages;
-        vector<float> featureStds;
-
-        float featuresSum = 0.0f;
-        for (uint i = 0; i < arrayOfFeatures.size(); ++i){
-
-            featuresSum = 0;
-        }
-        Object_model object_model = Object_model(className);
-        object_model.setFeatures(arrayOfFeatures);
-        objects.push_back(object_model);
-    }
-
-    return objects;
-}
 
 
 
