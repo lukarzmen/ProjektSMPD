@@ -107,6 +107,7 @@ void MainWindow::on_FSpushButtonCompute_clicked()
                 {
                     for (auto const &ob : objectModels)
                     {
+                        //https://stackoverflow.com/questions/24398059/how-do-i-sum-all-elements-in-a-ublas-matrix
                         int a =1;
                         a--;
                     }
