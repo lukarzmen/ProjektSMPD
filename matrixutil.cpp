@@ -15,7 +15,7 @@ int matrixutil::determinant_sign(const boost::numeric::ublas::permutation_matrix
         return pm_sign;
 }
 
-double matrixutil::determinant(bnu::matrix<double> &m ) {
+float matrixutil::determinant(bnu::matrix<float> &m ) {
     bnu::permutation_matrix<std::size_t> pm(m.size1());
     double det = 1.0;
     if( bnu::lu_factorize(m,pm) ) {
@@ -28,12 +28,20 @@ double matrixutil::determinant(bnu::matrix<double> &m ) {
     return det;
 }
 
+bnu::matrix<float> matrixutil::vectorToMatrix(std::vector<float> vector)
+{
+    bnu::matrix<float> matrix (vector.size(), 1);
+    for (int i = 0; i < matrix.size1(); i++)
+        matrix(i, 1) = vector.at(i);
+    return matrix;
+}
+
 bnu::matrix<float> matrixutil::vectorsOfVectorsToMatrix(std::vector<std::vector<float>> vectorsOfVectors)
 {
-    bnu::matrix<float> m (vectorsOfVectors.size(), vectorsOfVectors.front().size());
-    for (int i = 0; i < m.size1(); i++)
-        for (int j = 0; j < m.size2(); j++) {
-            m(i, j) = vectorsOfVectors[i][j];
+    bnu::matrix<float> matrix (vectorsOfVectors.size(), vectorsOfVectors.front().size());
+    for (int i = 0; i < matrix.size1(); i++)
+        for (int j = 0; j < matrix.size2(); j++) {
+            matrix(i, j) = vectorsOfVectors[i][j];
         }
-    return m;
+    return matrix;
 }

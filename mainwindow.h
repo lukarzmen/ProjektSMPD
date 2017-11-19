@@ -11,6 +11,7 @@
 #include "object_model.h"
 #include "ficherelement.h"
 #include "fischer.h"
+#include "vectorutil.h"
 
 #include"database.h"
 
@@ -34,6 +35,7 @@ private:
     void FSupdateButtonState(void);
     void FSsetButtonState(bool state);
     Fischer fischer;
+    vectorutil vectorUtil;
 
 private slots:
     void on_FSpushButtonOpenFile_clicked();

@@ -3,18 +3,17 @@
 #include <string>
 #include <vector>
 #include "matrixutil.h"
+#include "vectorutil.h"
 
 using namespace std;
 class Object_model
 {
 public:
-    Object_model(string className);
-    bnu::matrix<float> getFeatures();
-    void setFeatures(vector<vector<float>> arrayOfFeatures);
+    Object_model(string className, std::vector<std::vector<float>> arrayOfFeatures);
 
-    vector<float> getFeature(int id);
-    getFeatureAverage(int id);
-
+    vector<float> getFeatureStds(int featureId);
+    float getFeatureAverage(int averageId);
+    int getFeaturesCount();
     const string getClassName();
 
     bool operator ==(const Object_model& object) const
@@ -22,9 +21,10 @@ public:
         return className == object.className;
     }
 private:
-    bnu::matrix<float> arrayOfFeatures;
+    vector<float> featureAverages;
+    vector<vector<float>> featureStds;
     string className;
-    matrixutil matrix;
+    vectorutil vectorUtil;
 };
 
 #endif // OBJECT_MODEL_H

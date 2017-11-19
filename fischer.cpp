@@ -5,29 +5,10 @@ Fischer::Fischer()
 
 }
 
-
-void Fischer::printCombinations(std::vector<std::vector<int>> &arrayOfCombinations){
-    int sizeOfCombinationsVectorsArray = arrayOfCombinations.size();
-    for (int i = 0; i < sizeOfCombinationsVectorsArray; i++)
-    {
-        int vectorSize = arrayOfCombinations[i].size();
-        for (int j = 0; j < vectorSize; j++)
-        {
-            std::cout << arrayOfCombinations.at(i).at(j);
-            if(j < vectorSize - 1)
-                std::cout << " ";
-            else
-                std::cout << ';' << endl;
-        }
-    }
-}
-
 map<int,FicherElement> Fischer::getCombinationsMap(int numberOfFeatures, int dimension){
     Combinations* combinations = new Combinations();
     vector<vector<int>> arrayOfCombinations = combinations->generateCombinations(numberOfFeatures, dimension);
     delete combinations;
-    //for developer tests
-    printCombinations(arrayOfCombinations);
 
     map<int,FicherElement> combinationsMap;
 
@@ -41,6 +22,21 @@ map<int,FicherElement> Fischer::getCombinationsMap(int numberOfFeatures, int dim
 }
 
 vector<Object_model> Fischer::getObject_Models(vector<Object> &databaseObjects){
+
+    map<string, vector<vector<float>>> classesWithFeatures = getObjectsMap(databaseObjects);
+    vector<Object_model> objects;
+    foreach (auto &classWithFeatures, classesWithFeatures) {
+        string className = classWithFeatures.first;
+        vector<std::vector<float>> arrayOfFeatures = classWithFeatures.second;
+
+        Object_model object_model = Object_model(className, arrayOfFeatures);
+        objects.push_back(object_model);
+    }
+
+    return objects;
+}
+
+map<string, vector<vector<float>>> Fischer::getObjectsMap(vector<Object> &databaseObjects){
     map<string, vector<vector<float>>> classesWithFeatures;
 
     for (int i = 0; i < databaseObjects.size(); i++) {
@@ -58,16 +54,44 @@ vector<Object_model> Fischer::getObject_Models(vector<Object> &databaseObjects){
         else
             mapIterator->second.push_back(features);
     }
-
-    vector<Object_model> objects;
-    foreach (auto &classWithFeatures, classesWithFeatures) {
-        string className = classWithFeatures.first;
-        vector<std::vector<float>> arrayOfFeatures = classWithFeatures.second;
-
-        Object_model object_model = Object_model(className);
-        object_model.setFeatures(arrayOfFeatures);
-        objects.push_back(object_model);
-    }
-
-    return objects;
+    return classesWithFeatures;
 }
+
+vector<vector<float>> Fischer::calculateCovarianceMatrix(Object_model object, vector<int> arrayFeatureOfCombinations){
+    int probSize = object.getFeatureStds(0).size();
+
+    vector<vector<float>> covarianceMatrix;
+    for (int i=0; i<probSize; i++){
+        vector<float> vectorOfStdsToCalculateCov;
+        for(int j=0; j<arrayFeatureOfCombinations.size(); j++)
+        {
+            int featureID = arrayFeatureOfCombinations.at(j);
+            vectorOfStdsToCalculateCov.push_back(object.getFeatureStds(featureID).at(i));
+        }
+        vector<vector<float>> covarianceVector;
+        covarianceVector.push_back(vectorOfStdsToCalculateCov);
+        vector<vector<float>> transposedCovarianceVector;
+        transposedCovarianceVector = vectorUtil.transpose(covarianceVector);
+
+        //todo: do odwrócenia w metodzie multiply matrix
+        vector<vector<float>> powerOfCovarianceVectors =vectorUtil.multiplyMatrix(transposedCovarianceVector, covarianceVector);
+        if(covarianceMatrix.size() == 0)
+            covarianceMatrix = powerOfCovarianceVectors;
+        else
+            covarianceMatrix = vectorUtil.addMatrix(covarianceMatrix, powerOfCovarianceVectors);
+    }
+    return covarianceMatrix;
+}
+
+std::vector<float> Fischer::getMeansVector(Object_model object, vector<int> arrayFeatureOfCombinations)
+{
+    vector<float> featureMeans;
+    for(int i=0; i< arrayFeatureOfCombinations.size(); i++){
+        int featureID = arrayFeatureOfCombinations.at(i);
+        float featureMean = object.getFeatureAverage(featureID);
+        featureMeans.push_back(featureMean);
+    }
+    return featureMeans;
+}
+
+

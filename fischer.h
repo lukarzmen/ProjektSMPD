@@ -12,16 +12,24 @@
 #include "object.h"
 #include "qglobal.h"
 #include <map>
+#include "vectorutil.h"
+#include "matrixutil.h"
 
 using namespace std;
+namespace bnu = boost::numeric::ublas;
+
 class Fischer
 {
 public:
     Fischer();
     map<int,FicherElement> getCombinationsMap(int numberOfFeatures, int dimension);
     vector<Object_model> getObject_Models(vector<Object> &databaseObjects);
+    vector<vector<float>> calculateCovarianceMatrix(Object_model object, vector<int> arrayFeatureOfCombinations);
+    vector<float> getMeansVector(Object_model object, vector<int> arrayFeatureOfCombinations);
 private:
-    void printCombinations(vector<vector<int>> &arrayOfCombinations);
+    vectorutil vectorUtil;
+    matrixutil matrixUtil;
+    map<string, vector<vector<float>>> getObjectsMap(vector<Object> &databaseObjects);
 };
 
 #endif // FISCHER_H

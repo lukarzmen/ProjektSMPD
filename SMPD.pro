@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     ficherelement.cpp \
     object_model.cpp \
     fischer.cpp \
-    matrixutil.cpp
+    matrixutil.cpp \
+    vectorutil.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwindow.h \
     ficherelement.h \
     object_model.h \
     fischer.h \
-    matrixutil.h
+    matrixutil.h \
+    vectorutil.h
 
 FORMS    += mainwindow.ui
 
