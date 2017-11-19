@@ -90,30 +90,27 @@ void MainWindow::on_FSpushButtonCompute_clicked()
             vector<Object> all_obj = database.getObjects();
             vector<Object_model> objectModels = fischer.getObject_Models(all_obj);
             //todo: przeiterować po kombinacjach i wyliczyć dla każdej combination fischerValue
+            Object_model classA = objectModels[0];
+            Object_model classB = objectModels[1];
             for (auto &combination : combinationsMap)
             {
                 //std::map<std::string, int> classNames = database.getClassNames();
                 const std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
 
-                float Sm, Sw;
+
 
                 //wpakować macierze rozrzutu i średnie do obiektu
-                bnu::matrix<float> covarianceA;
-                bnu::matrix<float> covariannceB;
-                std::vector<float> meanA;
-                std::vector<float> meanB;
+                std::vector<float> meanA = fischer.getMeansVector(classA, arrayFeatureOfCombinations);
+                std::vector<float> meanB = fischer.getMeansVector(classB, arrayFeatureOfCombinations);
+                std::vector<std::vector<float>> covarianceA = fischer.calculateCovarianceMatrix(classA, arrayFeatureOfCombinations);
+                std::vector<std::vector<float>> covarianceB = fischer.calculateCovarianceMatrix(classB, arrayFeatureOfCombinations);
 
-                for (auto &feature : arrayFeatureOfCombinations)
-                {
-                    for (auto const &ob : objectModels)
-                    {
-                        int a =1;
-                        a--;
-                    }
-                }
+                float Sm = vectorUtil.vectorDistance(meanA, meanB);
 
-                float fischerValue = 0.0f;
-                fischerValue = Sm/Sw;
+                float Sw = 1;
+                std::vector<std::vector<float>> covariance = vectorUtil.addMatrix(covarianceA, covarianceB);
+
+                float fischerValue = Sm/Sw;
                 //ui->FStextBrowserDatabaseInfo->append("max_ind: "  +  QString::number(max_ind) + " " + QString::number(FLD));
 
                 if(fischerValue < minFischerValue)
