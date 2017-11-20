@@ -5,58 +5,6 @@ Fischer::Fischer()
 
 }
 
-map<int,FicherElement> Fischer::getCombinationsMap(int numberOfFeatures, int dimension){
-    Combinations* combinations = new Combinations();
-    vector<vector<int>> arrayOfCombinations = combinations->generateCombinations(numberOfFeatures, dimension);
-    delete combinations;
-
-    map<int,FicherElement> combinationsMap;
-
-    for (int i = 0; i < arrayOfCombinations.size(); i++)
-    {
-        FicherElement ficherElementToInsert = FicherElement(arrayOfCombinations[i]);
-        combinationsMap.insert(pair<int, FicherElement>(i, ficherElementToInsert));
-    }
-
-    return combinationsMap;
-}
-
-vector<Object_model> Fischer::getObject_Models(vector<Object> &databaseObjects){
-
-    map<string, vector<vector<float>>> classesWithFeatures = getObjectsMap(databaseObjects);
-    vector<Object_model> objects;
-    foreach (auto &classWithFeatures, classesWithFeatures) {
-        string className = classWithFeatures.first;
-        vector<std::vector<float>> arrayOfFeatures = classWithFeatures.second;
-
-        Object_model object_model = Object_model(className, arrayOfFeatures);
-        objects.push_back(object_model);
-    }
-
-    return objects;
-}
-
-map<string, vector<vector<float>>> Fischer::getObjectsMap(vector<Object> &databaseObjects){
-    map<string, vector<vector<float>>> classesWithFeatures;
-
-    for (int i = 0; i < databaseObjects.size(); i++) {
-        string classNameKey = databaseObjects[i].getClassName();
-        vector<float> features = databaseObjects[i].getFeatures();
-
-        map<string,vector<vector<float>>>::iterator mapIterator = classesWithFeatures.find(classNameKey);
-        if(mapIterator == classesWithFeatures.end())
-        {
-            std::vector<std::vector<float>> newArrayOfFeatures;
-            newArrayOfFeatures.push_back(features);
-            pair<string, vector<vector<float>>> newMapElement = pair<string, vector<vector<float>>>(classNameKey, newArrayOfFeatures);
-            classesWithFeatures.insert(newMapElement);
-        }
-        else
-            mapIterator->second.push_back(features);
-    }
-    return classesWithFeatures;
-}
-
 vector<vector<float>> Fischer::calculateCovarianceMatrix(Object_model object, vector<int> arrayFeatureOfCombinations){
     int probSize = object.getFeatureStds(0).size();
 
@@ -92,6 +40,50 @@ std::vector<float> Fischer::getMeansVector(Object_model object, vector<int> arra
         featureMeans.push_back(featureMean);
     }
     return featureMeans;
+}
+
+float Fischer::calculateFischerValue(std::vector<int> featureCombinations, vector<Object_model> objects){
+    Object_model classA = objects[0];
+    Object_model classB = objects[1];
+
+    std::vector<float> meanA = getMeansVector(classA, featureCombinations);
+    std::vector<float> meanB = getMeansVector(classB, featureCombinations);
+    std::vector<std::vector<float>> covarianceA = calculateCovarianceMatrix(classA, featureCombinations);
+    std::vector<std::vector<float>> covarianceB = calculateCovarianceMatrix(classB, featureCombinations);
+
+    float Sm = vectorUtil.vectorDistance(meanA, meanB);
+    std::vector<std::vector<float>> covariance = vectorUtil.addMatrix(covarianceA, covarianceB);
+    bnu::matrix<float> covMatrix = matrixUtil.vectorsOfVectorsToMatrix(covariance);
+
+    float Sw = matrixUtil.determinant(covMatrix);
+    float fischerValue = Sm/Sw;
+    return fischerValue;
+}
+
+ficherElement Fischer::getMinFischerElement(Database database, int dimension){
+    int numberOfFeatures = database.getNoFeatures();
+    vector<Object> all_obj = database.getObjects();
+
+    float minFischerValue = std::numeric_limits<float>::min();
+    int minFischerIndex = 0;
+    std::map<int,ficherElement> combinationsMap = combinations.getCombinationsMap(numberOfFeatures, dimension);
+    std::vector<Object_model> objectModels = objectconverter.getObject_Models(all_obj);
+
+    for (auto &combination : combinationsMap)
+    {
+        //std::map<std::string, int> classNames = database.getClassNames();
+        const std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
+
+        float fischerValue = calculateFischerValue(arrayFeatureOfCombinations, objectModels);
+        if(fischerValue < minFischerValue)
+        {
+            minFischerValue = fischerValue;
+            minFischerIndex = combination.first;
+        }
+        combination.second.setFischerValue(fischerValue);
+    }
+    ficherElement minFischerElement = combinationsMap.at(minFischerIndex);
+    return minFischerElement;
 }
 
 

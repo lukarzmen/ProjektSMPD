@@ -23,3 +23,5 @@ float Object_model::getFeatureAverage(int averageId){
     return featureAverages.at(averageId);
 }
 
+
+

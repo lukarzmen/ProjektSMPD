@@ -1,17 +1,19 @@
 #include "ficherelement.h"
 
-FicherElement::FicherElement(std::vector<int> arrayOfCombinations){
+ficherElement::ficherElement(std::vector<int> arrayOfCombinations){
     this->arrayOfCombinations = arrayOfCombinations;
 }
-void FicherElement::setFischerValue(float fischerValue){
+void ficherElement::setFischerValue(float fischerValue){
     this->fischerValue = fischerValue;
 }
 
-float FicherElement::getFischerValue(){
+float ficherElement::getFischerValue(){
     return this->fischerValue;
 }
 
-const std::vector<int> FicherElement::getVectorOfFeatureCombinations(){
+const std::vector<int> ficherElement::getVectorOfFeatureCombinations(){
     return this->arrayOfCombinations;
 }
+
+
 

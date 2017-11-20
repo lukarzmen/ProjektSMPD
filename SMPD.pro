@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     object_model.cpp \
     fischer.cpp \
     matrixutil.cpp \
-    vectorutil.cpp
+    vectorutil.cpp \
+    objectconverter.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
@@ -44,7 +45,8 @@ HEADERS  += mainwindow.h \
     object_model.h \
     fischer.h \
     matrixutil.h \
-    vectorutil.h
+    vectorutil.h \
+    objectconverter.h
 
 FORMS    += mainwindow.ui
 

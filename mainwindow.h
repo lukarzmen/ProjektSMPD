@@ -8,17 +8,15 @@
 #include <QtCore>
 #include <QtGui>
 #include <QMessageBox>
-#include "object_model.h"
-#include "ficherelement.h"
 #include "fischer.h"
-#include "vectorutil.h"
-
 #include"database.h"
+#include "ficherelement.h"
 
 namespace Ui {
 class MainWindow;
 }
 
+class fischerElement;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -34,8 +32,7 @@ private:
 
     void FSupdateButtonState(void);
     void FSsetButtonState(bool state);
-    Fischer fischer;
-    vectorutil vectorUtil;
+
 
 private slots:
     void on_FSpushButtonOpenFile_clicked();
@@ -51,6 +48,7 @@ private:
     Ui::MainWindow *ui;
 
 private:
+    Fischer fischer;
      Database database;
 };
 

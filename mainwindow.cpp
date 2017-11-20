@@ -75,50 +75,11 @@ void MainWindow::on_FSpushButtonCompute_clicked()
 {
     int dimension = ui->FScomboBox->currentText().toInt();
     int numberOfClass = database.getNoClass();
-    int numberOfFeatures = database.getNoFeatures();
 
-    map<int,FicherElement> combinationsMap = fischer.getCombinationsMap(numberOfFeatures, dimension);
-
-
-    if( ui->FSradioButtonFisher ->isChecked())
-    {
-        float minFischerValue = std::numeric_limits<float>::max();
-        int minFischerMapKey = 0;
-        if (numberOfClass == 2)
-        {
-
-            vector<Object> all_obj = database.getObjects();
-            vector<Object_model> objectModels = fischer.getObject_Models(all_obj);
-            //todo: przeiterować po kombinacjach i wyliczyć dla każdej combination fischerValue
-            Object_model classA = objectModels[0];
-            Object_model classB = objectModels[1];
-            for (auto &combination : combinationsMap)
-            {
-                //std::map<std::string, int> classNames = database.getClassNames();
-                const std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
-
-
-
-                //wpakować macierze rozrzutu i średnie do obiektu
-                std::vector<float> meanA = fischer.getMeansVector(classA, arrayFeatureOfCombinations);
-                std::vector<float> meanB = fischer.getMeansVector(classB, arrayFeatureOfCombinations);
-                std::vector<std::vector<float>> covarianceA = fischer.calculateCovarianceMatrix(classA, arrayFeatureOfCombinations);
-                std::vector<std::vector<float>> covarianceB = fischer.calculateCovarianceMatrix(classB, arrayFeatureOfCombinations);
-
-                float Sm = vectorUtil.vectorDistance(meanA, meanB);
-
-                float Sw = 1;
-                std::vector<std::vector<float>> covariance = vectorUtil.addMatrix(covarianceA, covarianceB);
-
-                float fischerValue = Sm/Sw;
-                //ui->FStextBrowserDatabaseInfo->append("max_ind: "  +  QString::number(max_ind) + " " + QString::number(FLD));
-
-                if(fischerValue < minFischerValue)
-                    minFischerValue = fischerValue;
-
-                combination.second.setFischerValue(fischerValue);
-            }
-        }
+    if( ui->FSradioButtonFisher ->isChecked() && numberOfClass == 2)
+    {       
+        float minFischerValue = fischer.getMinFischerElement(database, dimension).getFischerValue();
+        //ui->FStextBrowserDatabaseInfo->append("max_ind: "  +  QString::number(max_ind) + " " + QString::number(FLD));
     }
 }
 

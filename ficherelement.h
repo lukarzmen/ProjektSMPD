@@ -6,24 +6,19 @@
 #define FICHERELEMENT_H
 
 
-
-namespace Math {
-    class FicherElement;
-}
-
-class FicherElement
+class ficherElement
 {
-public:
-    FicherElement(){};
-    ~FicherElement(){};
-    FicherElement(std::vector<int> arrayOfCombinations);
-    void setFischerValue(float fischerValue);
-    float getFischerValue(void);
-   const std::vector<int> getVectorOfFeatureCombinations();
-private:
-    int id;
-    std::vector<int> arrayOfCombinations;
-    float fischerValue;
+    public:
+        fischerElement(){};
+        ~ficherElement(){};
+        ficherElement(std::vector<int> arrayOfCombinations);
+        void setFischerValue(float fischerValue);
+        float getFischerValue(void);
+       const std::vector<int> getVectorOfFeatureCombinations();
+    private:
+        int id;
+        std::vector<int> arrayOfCombinations;
+        float fischerValue;
 };
 
 #endif // FICHERELEMENT_H
