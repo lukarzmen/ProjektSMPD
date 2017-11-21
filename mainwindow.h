@@ -1,4 +1,5 @@
 #ifndef MAINWINDOW_H
+#include "ficherelement.h"
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -10,13 +11,13 @@
 #include <QMessageBox>
 #include "fischer.h"
 #include"database.h"
-#include "ficherelement.h"
+#include "vectorutil.h"
 
+class ficherElement;
 namespace Ui {
 class MainWindow;
 }
 
-class fischerElement;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -49,7 +50,8 @@ private:
 
 private:
     Fischer fischer;
-     Database database;
+    Database database;
+    vectorutil vectorUtil;
 };
 
 #endif // MAINWINDOW_H

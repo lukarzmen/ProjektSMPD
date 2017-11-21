@@ -78,8 +78,20 @@ void MainWindow::on_FSpushButtonCompute_clicked()
 
     if( ui->FSradioButtonFisher ->isChecked() && numberOfClass == 2)
     {       
-        float minFischerValue = fischer.getMinFischerElement(database, dimension).getFischerValue();
-        //ui->FStextBrowserDatabaseInfo->append("max_ind: "  +  QString::number(max_ind) + " " + QString::number(FLD));
+        ficherElement minFischerElement = fischer.getMinFischerElement(database, dimension);
+        float minFischerValue = minFischerElement.getFischerValue();
+        std::vector<int> bestCombinationOfFeatures = minFischerElement.getVectorOfFeatureCombinations();
+        string bestCombinationOfFeaturesString = vectorUtil.vectorToString(bestCombinationOfFeatures);
+
+        ui->FStextBrowserDatabaseInfo->append("Minimum for features combination: ["  +  QString::fromStdString(bestCombinationOfFeaturesString) + "] : " + QString::number(minFischerValue));
+    }
+    if(ui->FSradioButtonSFS -> isChecked() && numberOfClass == 2)
+    {
+        ficherElement minFischerElement = fischer.getMinFischerElementSFC(database, dimension);
+        float minFischerValue = minFischerElement.getFischerValue();
+        std::vector<int> bestCombinationOfFeatures = minFischerElement.getVectorOfFeatureCombinations();
+        string bestCombinationOfFeaturesString = vectorUtil.vectorToString(bestCombinationOfFeatures);
+        ui->FStextBrowserDatabaseInfo->append("Minimum for features combination: ["  +  QString::fromStdString(bestCombinationOfFeaturesString) + "] : " + QString::number(minFischerValue));
     }
 }
 
@@ -118,6 +130,8 @@ void MainWindow::on_CpushButtonExecute_clicked()
 {
 
 }
+
+
 
 
 

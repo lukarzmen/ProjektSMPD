@@ -94,7 +94,7 @@ ficherElement Fischer::getMinFischerElementSFC(Database database, int dimension)
     std::map<int,ficherElement> combinationsMap= combinations.getCombinationsMap(64,1);
 
     int minFischerIndex = 0;
-    for(int i = 0; i < dimension; i++)
+    for(int i = 0; i < dimension - 1; i++)
     {
         float minFischerValue = std::numeric_limits<float>::max();
 
@@ -109,7 +109,7 @@ ficherElement Fischer::getMinFischerElementSFC(Database database, int dimension)
             }
             combination.second.setFischerValue(fischerValue);
         }
-        maxCombinationFeatures.push_back(minFischerIndex);
+        maxCombinationFeatures.push_back(minFischerIndex); //todo: jedno przypisanie za duzo
         combinationsMap = combinations.getCombinationsMap(numberOfFeatures,maxCombinationFeatures);
     }
     ficherElement minFischerElement = combinationsMap.at(minFischerIndex);

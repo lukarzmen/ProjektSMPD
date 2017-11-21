@@ -5,6 +5,9 @@
 #include <vector>
 #include <math.h>
 #include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 
 using namespace std;
 class vectorutil
@@ -22,6 +25,7 @@ public:
     std::vector<float> vectorsSum(vector<float> v1, vector<float> v2);
     float vectorLenght(vector<float> v1);
     float vectorDistance(vector<float> v1, vector<float> v2);
+    std::string vectorToString(vector<int> vectorToParse);
 private:
      std::vector<float> vectorsSubstractAbs(vector<float> v1, vector<float> v2);
 };

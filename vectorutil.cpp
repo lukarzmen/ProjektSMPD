@@ -152,3 +152,10 @@ float vectorutil::vectorDistance(vector<float> v1, vector<float> v2){
     float vectorDistance = vectorLenght(substractAbs);
     return vectorDistance;
 }
+
+std::string vectorutil::vectorToString(vector<int> vectorToParse)
+{
+    std::stringstream result;
+    std::copy(vectorToParse.begin(), vectorToParse.end(), std::ostream_iterator<int>(result, " "));
+    return result.str();
+}
