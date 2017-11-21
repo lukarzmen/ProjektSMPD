@@ -1,5 +1,7 @@
 #include "ficherelement.h"
+ficherElement::ficherElement(){
 
+}
 ficherElement::ficherElement(std::vector<int> arrayOfCombinations){
     this->arrayOfCombinations = arrayOfCombinations;
 }

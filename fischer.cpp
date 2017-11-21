@@ -86,4 +86,23 @@ ficherElement Fischer::getMinFischerElement(Database database, int dimension){
     return minFischerElement;
 }
 
+ficherElement Fischer::getMinFischerElementSFC(Database database, int dimension){
+    int numberOfFeatures = database.getNoFeatures();
+    vector<Object> all_obj = database.getObjects();
+
+    float minFischerValue = std::numeric_limits<float>::min();
+    int minFischerIndex = 0;
+
+    vector<int> maxCombinationElements;
+    vector<vector<int>> combinationsVector = combinations.generateCombinations(numberOfFeatures, 1);
+
+    for(int i = 0; i < dimension; i++)
+    {
+
+        combinations.getCombinationsMap(numberOfFeatures,maxCombinationElements);
+    }
+   ficherElement fischerElement;
+   return fischerElement;
+}
+
 

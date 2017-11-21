@@ -9,7 +9,7 @@
 class ficherElement
 {
     public:
-        fischerElement(){};
+        ficherElement();
         ~ficherElement(){};
         ficherElement(std::vector<int> arrayOfCombinations);
         void setFischerValue(float fischerValue);
