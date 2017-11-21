@@ -16,7 +16,6 @@ class ficherElement
         float getFischerValue(void);
        const std::vector<int> getVectorOfFeatureCombinations();
     private:
-        int id;
         std::vector<int> arrayOfCombinations;
         float fischerValue;
 };

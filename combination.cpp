@@ -37,12 +37,12 @@ std::vector<std::vector<int>> Combinations::generateCombinations(int n, int k)
 {
     std::vector<std::vector<int> > ans;
     std::vector<int> tmp;
-    generateCombinationsUtility(ans, tmp, n, 1, k);
+    generateCombinationsUtility(ans, tmp, n, 0, k);
     return ans;
 }
 
 std::map<int,ficherElement>  Combinations::getCombinationsMap(int numberOfFeatures, int dimension){
-    std::vector<std::vector<int>> arrayOfCombinations = generateCombinations(numberOfFeatures, dimension);
+    std::vector<std::vector<int>> arrayOfCombinations = generateCombinations(numberOfFeatures - 1, dimension);
 
     std::map<int,ficherElement> combinationsMap;
 
@@ -66,7 +66,7 @@ std::map<int,ficherElement> Combinations::getCombinationsMap(std::vector<std::ve
 }
 
 std::map<int,ficherElement>  Combinations::getCombinationsMap(int numberOfFeatures, std::vector<int> fixedElements){
-    std::vector<std::vector<int>> arrayOfCombinations = generateCombinationsFixedlPlusOne(numberOfFeatures, fixedElements);
+    std::vector<std::vector<int>> arrayOfCombinations = generateCombinationsFixedlPlusOne(numberOfFeatures - 1, fixedElements);
 
     std::map<int,ficherElement> combinationsMap;
 
