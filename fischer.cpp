@@ -21,7 +21,6 @@ vector<vector<float>> Fischer::calculateCovarianceMatrix(Object_model object, ve
         vector<vector<float>> transposedCovarianceVector;
         transposedCovarianceVector = vectorUtil.transpose(covarianceVector);
 
-        //todo: do odwrócenia w metodzie multiply matrix
         vector<vector<float>> powerOfCovarianceVectors =vectorUtil.multiplyMatrix(covarianceVector,transposedCovarianceVector);
         if(covarianceMatrix.size() == 0)
             covarianceMatrix = powerOfCovarianceVectors;
@@ -97,7 +96,7 @@ ficherElement Fischer::getMinFischerElementSFC(Database database, int dimension)
     for(int i = 0; i < dimension; i++)
     {
         if(i == 0)
-            combinations.getCombinationsMap(64,1);
+            combinationsMap = combinations.getCombinationsMap(64,1);
         else
         {
             maxCombinationFeatures.push_back(minFischerIndex);
