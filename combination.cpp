@@ -20,9 +20,9 @@ void Combinations::generateCombinationsUtility(std::vector<std::vector<int> >& a
 std::vector<std::vector<int>> Combinations::generateCombinationsFixedlPlusOne(int n, std::vector<int> fixedElements)
 {
     std::vector<std::vector<int>> vectorOfCombinations;
-    for(int i =0; i< n; i++)
+    for(int i =0; i<= n; i++)
     {
-        if(!(std::find(fixedElements.begin(), fixedElements.end(), i) != fixedElements.end()))
+        if(std::find(fixedElements.begin(), fixedElements.end(), i) != fixedElements.end())
         {
             std::vector<int> combination;
             combination.swap(fixedElements);

@@ -76,15 +76,15 @@ void vectorutil::printVectorOfVectors(std::vector<std::vector<int>> &arrayOfComb
     }
 }
 
-std::vector<std::vector<float>> vectorutil::multiplyMatrix(std::vector<std::vector<float>> v1, std::vector<std::vector<float>> v2)
+std::vector<std::vector<float>> vectorutil::multiplyMatrix(std::vector<std::vector<float>> A, std::vector<std::vector<float>> B)
 {
     std::vector<std::vector<float>> vh;
-    for (int i = 0; i < v1.size(); i++) {
+    for (int i = 0; i < B.size(); i++) {
         std::vector<float> vv;
-        for (int j = 0; j < v2.front().size(); j++) {
+        for (int j = 0; j < A.front().size(); j++) {
             double temp = 0;
-            for (int inner = 0; inner < v1[i].size(); inner++) {
-                temp += v1[i][inner]*v2[inner][j];
+            for (int inner = 0; inner < B[i].size(); inner++) {
+                temp += A[inner][j]*B[i][inner];
             }
             vv.push_back(temp);
         }

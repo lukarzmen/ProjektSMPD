@@ -22,7 +22,7 @@ vector<vector<float>> Fischer::calculateCovarianceMatrix(Object_model object, ve
         transposedCovarianceVector = vectorUtil.transpose(covarianceVector);
 
         //todo: do odwrócenia w metodzie multiply matrix
-        vector<vector<float>> powerOfCovarianceVectors =vectorUtil.multiplyMatrix(transposedCovarianceVector, covarianceVector);
+        vector<vector<float>> powerOfCovarianceVectors =vectorUtil.multiplyMatrix(covarianceVector,transposedCovarianceVector);
         if(covarianceMatrix.size() == 0)
             covarianceMatrix = powerOfCovarianceVectors;
         else
@@ -91,11 +91,19 @@ ficherElement Fischer::getMinFischerElementSFC(Database database, int dimension)
     std::vector<Object_model> objectModels = objectconverter.getObject_Models(all_obj);
 
     vector<int> maxCombinationFeatures;
-    std::map<int,ficherElement> combinationsMap= combinations.getCombinationsMap(64,1);
-
+    std::map<int,ficherElement> combinationsMap;
     int minFischerIndex = 0;
-    for(int i = 0; i < dimension - 1; i++)
+
+    for(int i = 0; i < dimension; i++)
     {
+        if(i == 0)
+            combinations.getCombinationsMap(64,1);
+        else
+        {
+            maxCombinationFeatures.push_back(minFischerIndex);
+            combinationsMap = combinations.getCombinationsMap(numberOfFeatures,maxCombinationFeatures);
+        }
+
         float minFischerValue = std::numeric_limits<float>::max();
 
         for (auto &combination : combinationsMap)
@@ -109,8 +117,6 @@ ficherElement Fischer::getMinFischerElementSFC(Database database, int dimension)
             }
             combination.second.setFischerValue(fischerValue);
         }
-        maxCombinationFeatures.push_back(minFischerIndex); //todo: jedno przypisanie za duzo
-        combinationsMap = combinations.getCombinationsMap(numberOfFeatures,maxCombinationFeatures);
     }
     ficherElement minFischerElement = combinationsMap.at(minFischerIndex);
     return minFischerElement;
