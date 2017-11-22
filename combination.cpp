@@ -24,8 +24,7 @@ std::vector<std::vector<int>> Combinations::generateCombinationsFixedlPlusOne(in
     {
         if(std::find(fixedElements.begin(), fixedElements.end(), i) == fixedElements.end())
         {
-            std::vector<int> combination;
-            combination.swap(fixedElements);
+            std::vector<int> combination = fixedElements;
             combination.push_back(i);
             vectorOfCombinations.push_back(combination);
         }

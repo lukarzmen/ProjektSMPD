@@ -59,12 +59,12 @@ float Fischer::calculateFischerValue(std::vector<int> featureCombinations, vecto
     return fischerValue;
 }
 
-ficherElement Fischer::getMinFischerElement(Database database, int dimension){
+ficherElement Fischer::getBestFischerElement(Database database, int dimension){
     int numberOfFeatures = database.getNoFeatures();
     vector<Object> all_obj = database.getObjects();
 
-    float minFischerValue = std::numeric_limits<float>::max();
-    int minFischerIndex = 0;
+    float maxFischerValue = std::numeric_limits<float>::min();
+    int maxFischerIndex = 0;
     std::map<int,ficherElement> combinationsMap = combinations.getCombinationsMap(numberOfFeatures, dimension);
     std::vector<Object_model> objectModels = objectconverter.getObject_Models(all_obj);
 
@@ -73,25 +73,25 @@ ficherElement Fischer::getMinFischerElement(Database database, int dimension){
         const std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
 
         float fischerValue = calculateFischerValue(arrayFeatureOfCombinations, objectModels);
-        if(fischerValue < minFischerValue)
+        if(fischerValue > maxFischerValue)
         {
-            minFischerValue = fischerValue;
-            minFischerIndex = combination.first;
+            maxFischerValue = fischerValue;
+            maxFischerIndex = combination.first;
         }
         combination.second.setFischerValue(fischerValue);
     }
-    ficherElement minFischerElement = combinationsMap.at(minFischerIndex);
-    return minFischerElement;
+    ficherElement bestFischerElement = combinationsMap.at(maxFischerIndex);
+    return bestFischerElement;
 }
 
-ficherElement Fischer::getMinFischerElementSFC(Database database, int dimension){
+ficherElement Fischer::getBestFischerElementSFC(Database database, int dimension){
     int numberOfFeatures = database.getNoFeatures();
     vector<Object> all_obj = database.getObjects();
     std::vector<Object_model> objectModels = objectconverter.getObject_Models(all_obj);
 
     vector<int> maxCombinationFeatures;
     std::map<int,ficherElement> combinationsMap;
-    int minFischerIndex = 0;
+    int maxFischerIndex = 0;
 
     for(int i = 0; i < dimension; i++)
     {
@@ -99,26 +99,26 @@ ficherElement Fischer::getMinFischerElementSFC(Database database, int dimension)
             combinationsMap = combinations.getCombinationsMap(64,1);
         else
         {
-            maxCombinationFeatures.push_back(minFischerIndex);
+            maxCombinationFeatures.push_back(maxFischerIndex);
             combinationsMap = combinations.getCombinationsMap(numberOfFeatures,maxCombinationFeatures);
         }
 
-        float minFischerValue = std::numeric_limits<float>::max();
+        float maxFischerValue = std::numeric_limits<float>::min();
 
         for (auto &combination : combinationsMap)
         {
             const std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
             float fischerValue = calculateFischerValue(arrayFeatureOfCombinations, objectModels);
-            if(fischerValue < minFischerValue)
+            if(fischerValue > maxFischerValue)
             {
-                minFischerValue = fischerValue;
-                minFischerIndex = combination.first;
+                maxFischerValue = fischerValue;
+                maxFischerIndex = combination.first;
             }
             combination.second.setFischerValue(fischerValue);
         }
     }
-    ficherElement minFischerElement = combinationsMap.at(minFischerIndex);
-    return minFischerElement;
+    ficherElement bestFischerElement = combinationsMap.at(maxFischerIndex);
+    return bestFischerElement;
 }
 
 

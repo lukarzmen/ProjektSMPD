@@ -20,8 +20,8 @@ class Fischer
 {
 public:
     Fischer();
-    ficherElement getMinFischerElement(Database database, int dimension);
-    ficherElement getMinFischerElementSFC(Database database, int dimension);
+    ficherElement getBestFischerElement(Database database, int dimension);
+    ficherElement getBestFischerElementSFC(Database database, int dimension);
 private:
     vectorutil vectorUtil;
     matrixutil matrixUtil;

@@ -78,20 +78,20 @@ void MainWindow::on_FSpushButtonCompute_clicked()
 
     if( ui->FSradioButtonFisher ->isChecked() && numberOfClass == 2)
     {       
-        ficherElement minFischerElement = fischer.getMinFischerElement(database, dimension);
-        float minFischerValue = minFischerElement.getFischerValue();
-        std::vector<int> bestCombinationOfFeatures = minFischerElement.getVectorOfFeatureCombinations();
+        ficherElement bestFischerElement = fischer.getBestFischerElement(database, dimension);
+        float bestFischerValue = bestFischerElement.getFischerValue();
+        std::vector<int> bestCombinationOfFeatures = bestFischerElement.getVectorOfFeatureCombinations();
         string bestCombinationOfFeaturesString = vectorUtil.vectorToString(bestCombinationOfFeatures);
 
-        ui->FStextBrowserDatabaseInfo->append("Minimum for features combination: ["  +  QString::fromStdString(bestCombinationOfFeaturesString) + "] : " + QString::number(minFischerValue));
+        ui->FStextBrowserDatabaseInfo->append("Best features combination: ["  +  QString::fromStdString(bestCombinationOfFeaturesString) + "] : " + QString::number(bestFischerValue));
     }
     if(ui->FSradioButtonSFS -> isChecked() && numberOfClass == 2)
     {
-        ficherElement minFischerElement = fischer.getMinFischerElementSFC(database, dimension);
-        float minFischerValue = minFischerElement.getFischerValue();
-        std::vector<int> bestCombinationOfFeatures = minFischerElement.getVectorOfFeatureCombinations();
+        ficherElement bestFischerElement = fischer.getBestFischerElementSFC(database, dimension);
+        float bestFischerValue = bestFischerElement.getFischerValue();
+        std::vector<int> bestCombinationOfFeatures = bestFischerElement.getVectorOfFeatureCombinations();
         string bestCombinationOfFeaturesString = vectorUtil.vectorToString(bestCombinationOfFeatures);
-        ui->FStextBrowserDatabaseInfo->append("Minimum for features combination: ["  +  QString::fromStdString(bestCombinationOfFeaturesString) + "] : " + QString::number(minFischerValue));
+        ui->FStextBrowserDatabaseInfo->append("Best features combination: ["  +  QString::fromStdString(bestCombinationOfFeaturesString) + "] : " + QString::number(bestFischerValue));
     }
 }
 
