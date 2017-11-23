@@ -82,7 +82,7 @@ std::vector<std::vector<float>> vectorutil::multiplyMatrix(std::vector<std::vect
     for (int i = 0; i < B.size(); i++) {
         std::vector<float> vv;
         for (int j = 0; j < A.front().size(); j++) {
-            double temp = 0;
+            float temp = 0;
             for (int inner = 0; inner < B[i].size(); inner++) {
                 temp += A[inner][j]*B[i][inner];
             }
@@ -159,3 +159,5 @@ std::string vectorutil::vectorToString(vector<int> vectorToParse)
     std::copy(vectorToParse.begin(), vectorToParse.end(), std::ostream_iterator<int>(result, " "));
     return result.str();
 }
+
+
