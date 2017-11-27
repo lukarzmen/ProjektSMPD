@@ -64,11 +64,10 @@ float Fischer::calculateFischerValue(std::vector<int> &featureCombinations, vect
     }
     else
     {
-        bnu::matrix<float> covA = matrixUtil.vectorsOfVectorsToMatrix(covarianceA);
-        bnu::matrix<float> covB = matrixUtil.vectorsOfVectorsToMatrix(covarianceB);
-        float covADet = matrixUtil.determinant(covA);
-        float covBDet = matrixUtil.determinant(covB);
-        fischerValue = Sm/(sqrt(covADet) + sqrt(covBDet));
+        float varianceA = covarianceA.front().front();
+        float varianceB = covarianceB.front().front();
+        float Sw = sqrt(varianceA) + sqrt(varianceB);
+        fischerValue = Sm/Sw;
     }
     return fischerValue;
 }
