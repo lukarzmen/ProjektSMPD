@@ -91,7 +91,7 @@ void MainWindow::on_FSpushButtonCompute_clicked()
         float bestFischerValue = bestFischerElement.getFischerValue();
         std::vector<int> bestCombinationOfFeatures = bestFischerElement.getVectorOfFeatureCombinations();
         string bestCombinationOfFeaturesString = vectorUtil.vectorToString(bestCombinationOfFeatures);
-        ui->FStextBrowserDatabaseInfo->append("Best features combination for SFC: ["  +  QString::fromStdString(bestCombinationOfFeaturesString) + "] : " + QString::number(bestFischerValue));
+        ui->FStextBrowserDatabaseInfo->append("Best features combination for SFS: ["  +  QString::fromStdString(bestCombinationOfFeaturesString) + "] : " + QString::number(bestFischerValue));
     }
 }
 

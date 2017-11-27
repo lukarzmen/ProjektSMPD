@@ -28,7 +28,7 @@ float matrixutil::determinant(bnu::matrix<float> &m ) {
     return det;
 }
 
-bnu::matrix<float> matrixutil::vectorToMatrix(std::vector<float> vector)
+bnu::matrix<float> matrixutil::vectorToMatrix(std::vector<float> &vector)
 {
     bnu::matrix<float> matrix (vector.size(), 1);
     for (int i = 0; i < matrix.size1(); i++)
@@ -36,7 +36,7 @@ bnu::matrix<float> matrixutil::vectorToMatrix(std::vector<float> vector)
     return matrix;
 }
 
-bnu::matrix<float> matrixutil::vectorsOfVectorsToMatrix(std::vector<std::vector<float>> vectorsOfVectors)
+bnu::matrix<float> matrixutil::vectorsOfVectorsToMatrix(std::vector<std::vector<float>> &vectorsOfVectors)
 {
     bnu::matrix<float> matrix (vectorsOfVectors.size(), vectorsOfVectors.front().size());
     for (int i = 0; i < matrix.size1(); i++)

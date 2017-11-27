@@ -5,7 +5,7 @@ vectorutil::vectorutil()
 
 }
 
-std::vector<std::vector<float>> vectorutil::transpose(std::vector<std::vector<float>> vectorToTranspone)
+std::vector<std::vector<float>> vectorutil::transpose(std::vector<std::vector<float>> &vectorToTranspone)
 {
     std::vector<std::vector<float>> transponedVectorOfVectors;
     for (int i = 0; i < vectorToTranspone.front().size(); i++) {
@@ -18,7 +18,7 @@ std::vector<std::vector<float>> vectorutil::transpose(std::vector<std::vector<fl
     return transponedVectorOfVectors;
 }
 
-float vectorutil::getVectorModule(std::vector<float> vector)
+float vectorutil::getVectorModule(std::vector<float> &vector)
 {
     float module =0.0;
     for (int i = 0; i < vector.size(); i++) {
@@ -27,7 +27,7 @@ float vectorutil::getVectorModule(std::vector<float> vector)
     return sqrt(module);
 }
 
-std::vector<std::vector<float>> vectorutil::calculateStds(std::vector<std::vector<float>> vectorsOfVectors, std::vector<float> featureMeans){
+std::vector<std::vector<float>> vectorutil::calculateVariances(std::vector<std::vector<float>> &vectorsOfVectors, std::vector<float> &featureMeans){
     int sizeX = vectorsOfVectors.size();
     int sizeY = vectorsOfVectors.front().size();
 
@@ -35,15 +35,15 @@ std::vector<std::vector<float>> vectorutil::calculateStds(std::vector<std::vecto
      {
         for (int i = 0; i <sizeX; i++)
         {
-            float featureProbStd = vectorsOfVectors.at(i).at(j) - featureMeans[j];
-            vectorsOfVectors.at(i).at(j) = fabs(featureProbStd);
+            float featureProbVariance = vectorsOfVectors.at(i).at(j) - featureMeans[j];
+            vectorsOfVectors.at(i).at(j) = featureProbVariance;
         }
     }
-    std::vector<std::vector<float>> transponedVectorOfVectors = this->transpose(vectorsOfVectors);
+    std::vector<std::vector<float>> transponedVectorOfVectors = transpose(vectorsOfVectors);
     return transponedVectorOfVectors;
 }
 
-std::vector<float> vectorutil::calculateColumnMeans(std::vector<std::vector<float>> vectorsOfVectors){
+std::vector<float> vectorutil::calculateColumnMeans(std::vector<std::vector<float>> &vectorsOfVectors){
     std::vector<float> featuresMeans;
     int sizeX = vectorsOfVectors.size();
     int sizeY = vectorsOfVectors.front().size();
@@ -54,7 +54,7 @@ std::vector<float> vectorutil::calculateColumnMeans(std::vector<std::vector<floa
         for (int i = 0; i <sizeX; i++)
             sum+= vectorsOfVectors.at(i).at(j);
 
-        float mean =  sum/sizeY;
+        float mean =  sum/sizeX;
         featuresMeans.push_back(mean);
     }
     return featuresMeans;
@@ -76,7 +76,7 @@ void vectorutil::printVectorOfVectors(std::vector<std::vector<int>> &arrayOfComb
     }
 }
 
-std::vector<std::vector<float>> vectorutil::multiplyMatrix(std::vector<std::vector<float>> A, std::vector<std::vector<float>> B)
+std::vector<std::vector<float>> vectorutil::multiplyMatrix(std::vector<std::vector<float>> &A, std::vector<std::vector<float>> &B)
 {
     std::vector<std::vector<float>> vh;
     for (int i = 0; i < B.size(); i++) {
@@ -93,7 +93,7 @@ std::vector<std::vector<float>> vectorutil::multiplyMatrix(std::vector<std::vect
     return vh;
 }
 
-std::vector<std::vector<float>> vectorutil::addMatrix(std::vector<std::vector<float>> v1, std::vector<std::vector<float>> v2){
+std::vector<std::vector<float>> vectorutil::addMatrix(std::vector<std::vector<float>> &v1, std::vector<std::vector<float>> &v2){
     std::vector<std::vector<float>> sumVector;
     for (int i = 0; i < v1.size(); i++) {
         std::vector<float> column;
@@ -106,7 +106,7 @@ std::vector<std::vector<float>> vectorutil::addMatrix(std::vector<std::vector<fl
     }
     return sumVector;
 }
-std::vector<float> vectorutil::vectorsSum(vector<float> v1, vector<float> v2)
+std::vector<float> vectorutil::vectorsSum(vector<float> &v1, vector<float> &v2)
 {
     vector<float> vectorSum;
     for(int i=0;i<v1.front();i++){
@@ -116,7 +116,7 @@ std::vector<float> vectorutil::vectorsSum(vector<float> v1, vector<float> v2)
     return vectorSum;
 }
 
-std::vector<float> vectorutil::vectorsSubstract(vector<float> v1, vector<float> v2)
+std::vector<float> vectorutil::vectorsSubstract(vector<float> &v1, vector<float> &v2)
 {
     vector<float> vectorSum;
     for(int i=0;i<v1.front();i++){
@@ -126,17 +126,17 @@ std::vector<float> vectorutil::vectorsSubstract(vector<float> v1, vector<float> 
     return vectorSum;
 }
 
-std::vector<float> vectorutil::vectorsSubstractAbs(vector<float> v1, vector<float> v2)
+std::vector<float> vectorutil::vectorsSubstractAbs(vector<float> &v1, vector<float> &v2)
 {
     vector<float> vectorSum;
-    for(int i=0;i<v1.front();i++){
+    for(int i=0;i<v1.size();i++){
         float substractAbs = fabs(v1.at(i) - v2.at(i));
         vectorSum.push_back(substractAbs);
     }
     return vectorSum;
 }
 
-float vectorutil::vectorLenght(vector<float> v1){
+float vectorutil::vectorLenght(vector<float> &v1){
 
     float powerSum = 0.0f;
     for(int i=0; i< v1.size();i++){
@@ -147,17 +147,15 @@ float vectorutil::vectorLenght(vector<float> v1){
     return distance;
 }
 
-float vectorutil::vectorDistance(vector<float> v1, vector<float> v2){
+float vectorutil::vectorDistance(vector<float> &v1, vector<float> &v2){
     std::vector<float> substractAbs = vectorsSubstractAbs(v1, v2);
     float vectorDistance = vectorLenght(substractAbs);
     return vectorDistance;
 }
 
-std::string vectorutil::vectorToString(vector<int> vectorToParse)
+std::string vectorutil::vectorToString(vector<int> &vectorToParse)
 {
     std::stringstream result;
     std::copy(vectorToParse.begin(), vectorToParse.end(), std::ostream_iterator<int>(result, " "));
     return result.str();
 }
-
-

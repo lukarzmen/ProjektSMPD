@@ -13,7 +13,7 @@ float ficherElement::getFischerValue(){
     return this->fischerValue;
 }
 
-const std::vector<int> ficherElement::getVectorOfFeatureCombinations(){
+std::vector<int>& ficherElement::getVectorOfFeatureCombinations(){
     return this->arrayOfCombinations;
 }
 

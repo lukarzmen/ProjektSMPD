@@ -16,8 +16,8 @@ public:
     matrixutil();
     int determinant_sign(const bnu::permutation_matrix<std::size_t>& pm);
     float determinant( bnu::matrix<float>& m );
-    bnu::matrix<float> vectorsOfVectorsToMatrix(std::vector<std::vector<float>> vectorsOfVectors);
-    bnu::matrix<float> vectorToMatrix(std::vector<float> vector);
+    bnu::matrix<float> vectorsOfVectorsToMatrix(std::vector<std::vector<float>> &vectorsOfVectors);
+    bnu::matrix<float> vectorToMatrix(std::vector<float> &vector);
 };
 
 

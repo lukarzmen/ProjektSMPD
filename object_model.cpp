@@ -4,7 +4,7 @@ Object_model::Object_model(string className, std::vector<std::vector<float>> arr
 {
     this->className = className;
     this->featureAverages = this->vectorUtil.calculateColumnMeans(arrayOfFeatures);
-    this->featureStds = this->vectorUtil.calculateStds(arrayOfFeatures, this->featureAverages);
+    this->featureVariances = this->vectorUtil.calculateVariances(arrayOfFeatures, this->featureAverages);
 }
 
 
@@ -16,8 +16,8 @@ int Object_model::getFeaturesCount()
 {
     return featureAverages.size();
 }
-vector<float> Object_model::getFeatureStds(int featureId){
-    return  featureStds.at(featureId);
+vector<float>& Object_model::getFeatureVariances(int featureId){
+    return  featureVariances.at(featureId);
 }
 float Object_model::getFeatureAverage(int averageId){
     return featureAverages.at(averageId);

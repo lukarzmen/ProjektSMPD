@@ -20,16 +20,16 @@ class Fischer
 {
 public:
     Fischer();
-    ficherElement getBestFischerElement(Database database, int dimension);
-    ficherElement getBestFischerElementSFC(Database database, int dimension);
+    ficherElement getBestFischerElement(Database &database, int dimension);
+    ficherElement getBestFischerElementSFC(Database &database, int dimension);
 private:
     vectorutil vectorUtil;
     matrixutil matrixUtil;
     objectConverter objectconverter;
     Combinations combinations;
-    vector<float> getMeansVector(Object_model object, vector<int> arrayFeatureOfCombinations);
-    vector<vector<float>> calculateCovarianceMatrix(Object_model object, vector<int> arrayFeatureOfCombinations);
-    float calculateFischerValue(std::vector<int> featureCombinations, vector<Object_model> objects);
+    vector<float> getMeansVector(Object_model &object, vector<int> &arrayFeatureOfCombinations);
+    vector<vector<float>> calculateCovarianceMatrix(Object_model &object, vector<int> &arrayFeatureOfCombinations);
+    float calculateFischerValue(std::vector<int> &featureCombinations, vector<Object_model> &objects);
 };
 
 #endif // FISCHER_H

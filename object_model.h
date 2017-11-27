@@ -11,7 +11,7 @@ class Object_model
 public:
     Object_model(string className, std::vector<std::vector<float>> arrayOfFeatures);
 
-    vector<float> getFeatureStds(int featureId);
+    vector<float>& getFeatureVariances(int featureId);
     float getFeatureAverage(int averageId);
     int getFeaturesCount();
     const string getClassName();
@@ -22,7 +22,7 @@ public:
     }
 private:
     vector<float> featureAverages;
-    vector<vector<float>> featureStds;
+    vector<vector<float>> featureVariances;
     string className;
     vectorutil vectorUtil;
 };

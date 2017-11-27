@@ -5,8 +5,8 @@ Fischer::Fischer()
 
 }
 
-vector<vector<float>> Fischer::calculateCovarianceMatrix(Object_model object, vector<int> arrayFeatureOfCombinations){
-    int probSize = object.getFeatureStds(0).size();
+vector<vector<float>> Fischer::calculateCovarianceMatrix(Object_model &object, vector<int> &arrayFeatureOfCombinations){
+    int probSize = object.getFeatureVariances(0).size();
 
     vector<vector<float>> covarianceMatrix;
     for (int i=0; i<probSize; i++){
@@ -14,7 +14,8 @@ vector<vector<float>> Fischer::calculateCovarianceMatrix(Object_model object, ve
         for(int j=0; j<arrayFeatureOfCombinations.size(); j++)
         {
             int featureID = arrayFeatureOfCombinations.at(j);
-            vectorOfStdsToCalculateCov.push_back(object.getFeatureStds(featureID).at(i));
+            float variance = object.getFeatureVariances(featureID).at(i);
+            vectorOfStdsToCalculateCov.push_back(variance);
         }
         vector<vector<float>> covarianceVector;
         covarianceVector.push_back(vectorOfStdsToCalculateCov);
@@ -30,7 +31,7 @@ vector<vector<float>> Fischer::calculateCovarianceMatrix(Object_model object, ve
     return covarianceMatrix;
 }
 
-std::vector<float> Fischer::getMeansVector(Object_model object, vector<int> arrayFeatureOfCombinations)
+std::vector<float> Fischer::getMeansVector(Object_model &object, vector<int> &arrayFeatureOfCombinations)
 {
     vector<float> featureMeans;
     for(int i=0; i< arrayFeatureOfCombinations.size(); i++){
@@ -41,9 +42,10 @@ std::vector<float> Fischer::getMeansVector(Object_model object, vector<int> arra
     return featureMeans;
 }
 
-float Fischer::calculateFischerValue(std::vector<int> featureCombinations, vector<Object_model> objects){
+float Fischer::calculateFischerValue(std::vector<int> &featureCombinations, vector<Object_model> &objects){
     Object_model classA = objects[0];
     Object_model classB = objects[1];
+    float fischerValue = 0.0f;
 
     std::vector<float> meanA = getMeansVector(classA, featureCombinations);
     std::vector<float> meanB = getMeansVector(classB, featureCombinations);
@@ -51,15 +53,27 @@ float Fischer::calculateFischerValue(std::vector<int> featureCombinations, vecto
     std::vector<std::vector<float>> covarianceB = calculateCovarianceMatrix(classB, featureCombinations);
 
     float Sm = vectorUtil.vectorDistance(meanA, meanB);
-    std::vector<std::vector<float>> covariance = vectorUtil.addMatrix(covarianceA, covarianceB);
-    bnu::matrix<float> covMatrix = matrixUtil.vectorsOfVectorsToMatrix(covariance);
 
-    float Sw = matrixUtil.determinant(covMatrix);
-    float fischerValue = Sm/Sw;
+    if (featureCombinations.size() > 1)
+    {
+        std::vector<std::vector<float>> covariance = vectorUtil.addMatrix(covarianceA, covarianceB);
+        bnu::matrix<float> covMatrix = matrixUtil.vectorsOfVectorsToMatrix(covariance);
+
+        float Sw = matrixUtil.determinant(covMatrix);
+        fischerValue = Sm/Sw;
+    }
+    else
+    {
+        bnu::matrix<float> covA = matrixUtil.vectorsOfVectorsToMatrix(covarianceA);
+        bnu::matrix<float> covB = matrixUtil.vectorsOfVectorsToMatrix(covarianceB);
+        float covADet = matrixUtil.determinant(covA);
+        float covBDet = matrixUtil.determinant(covB);
+        fischerValue = Sm/(sqrt(covADet) + sqrt(covBDet));
+    }
     return fischerValue;
 }
 
-ficherElement Fischer::getBestFischerElement(Database database, int dimension){
+ficherElement Fischer::getBestFischerElement(Database &database, int dimension){
     int numberOfFeatures = database.getNoFeatures();
     vector<Object> all_obj = database.getObjects();
 
@@ -70,7 +84,7 @@ ficherElement Fischer::getBestFischerElement(Database database, int dimension){
 
     for (auto &combination : combinationsMap)
     {
-        const std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
+        std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
 
         float fischerValue = calculateFischerValue(arrayFeatureOfCombinations, objectModels);
         if(fischerValue > maxFischerValue)
@@ -84,7 +98,7 @@ ficherElement Fischer::getBestFischerElement(Database database, int dimension){
     return bestFischerElement;
 }
 
-ficherElement Fischer::getBestFischerElementSFC(Database database, int dimension){
+ficherElement Fischer::getBestFischerElementSFC(Database &database, int dimension){
     int numberOfFeatures = database.getNoFeatures();
     vector<Object> all_obj = database.getObjects();
     std::vector<Object_model> objectModels = objectconverter.getObject_Models(all_obj);
@@ -96,7 +110,7 @@ ficherElement Fischer::getBestFischerElementSFC(Database database, int dimension
     for(int i = 0; i < dimension; i++)
     {
         if(i == 0)
-            combinationsMap = combinations.getCombinationsMap(64,1);
+            combinationsMap = combinations.getCombinationsMap(numberOfFeatures,1);
         else
         {
             maxCombinationFeatures.push_back(maxFischerIndex);
@@ -107,7 +121,7 @@ ficherElement Fischer::getBestFischerElementSFC(Database database, int dimension
 
         for (auto &combination : combinationsMap)
         {
-            const std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
+            std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
             float fischerValue = calculateFischerValue(arrayFeatureOfCombinations, objectModels);
             if(fischerValue > maxFischerValue)
             {
