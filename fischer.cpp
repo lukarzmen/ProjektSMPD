@@ -112,7 +112,7 @@ ficherElement Fischer::getBestFischerElementSFC(Database &database, int dimensio
             combinationsMap = combinations.getCombinationsMap(numberOfFeatures,1);
         else
         {
-            maxCombinationFeatures.push_back(maxFischerIndex);
+            maxCombinationFeatures = combinationsMap.at(maxFischerIndex).getVectorOfFeatureCombinations();
             combinationsMap = combinations.getCombinationsMap(numberOfFeatures,maxCombinationFeatures);
         }
 
@@ -129,6 +129,7 @@ ficherElement Fischer::getBestFischerElementSFC(Database &database, int dimensio
             }
             combination.second.setFischerValue(fischerValue);
         }
+
     }
     ficherElement bestFischerElement = combinationsMap.at(maxFischerIndex);
     return bestFischerElement;
