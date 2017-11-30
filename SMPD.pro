@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     fischer.cpp \
     matrixutil.cpp \
     vectorutil.cpp \
-    objectconverter.cpp
+    objectconverter.cpp \
+    clasiffier.cpp \
+    objectcluster.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
@@ -46,7 +48,9 @@ HEADERS  += mainwindow.h \
     fischer.h \
     matrixutil.h \
     vectorutil.h \
-    objectconverter.h
+    objectconverter.h \
+    clasiffier.h \
+    objectcluster.h
 
 FORMS    += mainwindow.ui
 
