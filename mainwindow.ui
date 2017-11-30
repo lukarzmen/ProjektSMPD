@@ -274,6 +274,9 @@
         <height>31</height>
        </rect>
       </property>
+      <property name="plainText">
+       <string>33</string>
+      </property>
      </widget>
      <widget class="QPushButton" name="CpushButtonExecute">
       <property name="geometry">
@@ -309,6 +312,19 @@
         <width>256</width>
         <height>192</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ClabelTraningPart_2">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>60</y>
+        <width>41</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;%&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </widget>

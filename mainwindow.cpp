@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowTitle("SMPD Project by L. Medyk");
     this->setWindowIcon(QIcon(":/icons/icon.png"));
     FSupdateButtonState();
+    addClassfiers();
+    addItemsToKComboBox(5);
 }
 
 MainWindow::~MainWindow()
@@ -59,13 +61,7 @@ void MainWindow::FSsetButtonState(bool state)
 
 void MainWindow::on_FSpushButtonOpenFile_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Open data file"), "//", tr("Texts Files (*.txt)"));
-
-    if ( !database.load(fileName.toStdString()) )
-        QMessageBox::warning(this, "Warning", "Cannot read file!!!");
-    else
-        QMessageBox::information(this, fileName, "File loaded !!!");
+    OpenFile();
 
     FSupdateButtonState();
     updateDatabaseInfo();
@@ -113,7 +109,7 @@ void MainWindow::on_PpushButtonSelectFolder_clicked()
 
 void MainWindow::on_CpushButtonOpenFile_clicked()
 {
-
+    OpenFile();
 }
 
 void MainWindow::on_CpushButtonSaveFile_clicked()
@@ -123,13 +119,70 @@ void MainWindow::on_CpushButtonSaveFile_clicked()
 
 void MainWindow::on_CpushButtonTrain_clicked()
 {
+    bool isEnabled = false;
+    int percentageTrainSetOfDataset = ui->CplainTextEditTrainingPart->toPlainText().toInt();
 
+    if (percentageTrainSetOfDataset <= 0 || percentageTrainSetOfDataset >= 100)
+        QMessageBox::warning(this, "Warning", "Percentage value must be in range of 0 and 100");
+    else{
+        int objectsAmount = database.getNoObjects();
+        int trainObjectSetAmount = (objectsAmount * percentageTrainSetOfDataset)/100.0;
+         ui->CtextBrowser->append("Object amount: " + QString::number(objectsAmount) + " Training set amount: " + QString::number(trainObjectSetAmount));
+         isEnabled = true;
+    }
+
+
+     ui->CpushButtonExecute->setEnabled(isEnabled);
 }
 
 void MainWindow::on_CpushButtonExecute_clicked()
 {
+//    int k = ui->CplainTextEditInputK->toPlainText().toInt();
+//    if (k >= objectsCount || k <= 0)
+//    {
+//        QMessageBox::warning(this, "Warning", "k-Value must be in range of 0 and " + objectsCount);
+//    }
+//    else
+//        {
+//            double percentage = 0;
+//            switch(ui->CcomboBoxClassifiers->currentIndex()) {
+//                case 0:
+//                    //percentage = classifierNN.Execute(trainingObjects, objects, k);
+//                    break;
+//                case 1:
+//                    //percentage = classifierNM.Execute(trainingObjects, objects, k);
+//                    break;
+//            }
+//            ui->CtextBrowser->append("Elements good classified: "  +  QString::number(percentage) + "%");
+//    }
 
 }
+
+bool MainWindow::OpenFile(){
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Open data file"), "//", tr("Texts Files (*.txt)"));
+
+    if ( !database.load(fileName.toStdString()) )
+    {
+        QMessageBox::warning(this, "Warning", "Cannot read file!!!");
+        return false;
+    }
+    else
+    {
+        QMessageBox::information(this, fileName, "File loaded !!!");
+        return true;
+    }
+}
+
+void MainWindow::addClassfiers(){
+    ui->CcomboBoxClassifiers->addItems((QStringList()<<"NN"<<"NM"<<"k-NN"<<"k-NM"));
+}
+
+void MainWindow::addItemsToKComboBox(int k){
+    ui->CcomboBoxK->addItems((QStringList()<<"1"<<"2"<<"3"<<"4"));
+}
+
+
 
 
 
