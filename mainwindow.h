@@ -30,9 +30,11 @@ private:
     bool loadFile(const std::string &fileName);
     void updateDatabaseInfo();
     void saveFile(const std::string &fileName);
-
+    void addClassfiers();
     void FSupdateButtonState(void);
     void FSsetButtonState(bool state);
+    bool OpenFile();
+    void addItemsToKComboBox(int k);
 
 
 private slots:
