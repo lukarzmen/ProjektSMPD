@@ -8,7 +8,7 @@ class objectCluster
 {
 public:
     objectCluster(std::string className);
-    std::string getClassName;
+    std::string getClassName();
     double getAverage();
     void addProb(std::vector<double> prob);
     void setProbs(std::vector<std::vector<double>> probs);

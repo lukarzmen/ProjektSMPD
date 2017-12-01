@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowIcon(QIcon(":/icons/icon.png"));
     FSupdateButtonState();
     addClassfiers();
-    addItemsToKComboBox(5);
+    addItemsToKComboBox(7);
 }
 
 MainWindow::~MainWindow()
@@ -123,8 +123,11 @@ void MainWindow::on_CpushButtonTrain_clicked()
     int percentageTrainSetOfDataset = ui->CplainTextEditTrainingPart->toPlainText().toInt();
 
     if (percentageTrainSetOfDataset <= 0 || percentageTrainSetOfDataset >= 100)
+    {
         QMessageBox::warning(this, "Warning", "Percentage value must be in range of 0 and 100");
-    else{
+        return;
+
+    }else{
         int objectsAmount = database.getNoObjects();
         int trainObjectSetAmount = (objectsAmount * percentageTrainSetOfDataset)/100.0;
          ui->CtextBrowser->append("Object amount: " + QString::number(objectsAmount) + " Training set amount: " + QString::number(trainObjectSetAmount));
@@ -179,7 +182,10 @@ void MainWindow::addClassfiers(){
 }
 
 void MainWindow::addItemsToKComboBox(int k){
-    ui->CcomboBoxK->addItems((QStringList()<<"1"<<"2"<<"3"<<"4"));
+    QStringList itemsList = QStringList();
+    for(int i =1; i<=k; i++)
+        itemsList.append(QString::number(i));
+    ui->CcomboBoxK->addItems(itemsList);
 }
 
 
