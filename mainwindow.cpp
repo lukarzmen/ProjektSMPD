@@ -137,24 +137,17 @@ void MainWindow::on_CpushButtonTrain_clicked()
 
 void MainWindow::on_CpushButtonExecute_clicked()
 {
-//    int k = ui->CplainTextEditInputK->toPlainText().toInt();
-//    if (k >= objectsCount || k <= 0)
-//    {
-//        QMessageBox::warning(this, "Warning", "k-Value must be in range of 0 and " + objectsCount);
-//    }
-//    else
-//        {
-//            double percentage = 0;
-//            switch(ui->CcomboBoxClassifiers->currentIndex()) {
-//                case 0:
-//                    //percentage = classifierNN.Execute(trainingObjects, objects, k);
-//                    break;
-//                case 1:
-//                    //percentage = classifierNM.Execute(trainingObjects, objects, k);
-//                    break;
-//            }
-//            ui->CtextBrowser->append("Elements good classified: "  +  QString::number(percentage) + "%");
-//    }
+    int k = ui->CcomboBoxK->currentText().toInt();
+    int objectsCount = database.getNoObjects();
+
+    double percentage = 0;
+    if(ui->CcomboBoxClassifiers->currentText()== "NN");
+    if(ui->CcomboBoxClassifiers->currentText()== "NM");
+    if(ui->CcomboBoxClassifiers->currentText()== "k-NN");
+    if(ui->CcomboBoxClassifiers->currentText()== "k-NM");
+
+    ui->CtextBrowser->append("Elements good classified: "  +  QString::number(percentage) + "%");
+
 
 }
 
@@ -179,7 +172,11 @@ void MainWindow::addClassfiers(){
 }
 
 void MainWindow::addItemsToKComboBox(int k){
-    ui->CcomboBoxK->addItems((QStringList()<<"1"<<"2"<<"3"<<"4"));
+    QStringList kList = QStringList();
+    for(int i = 1; i<= k;i++)
+        kList.push_back(QString::number(i));
+
+    ui->CcomboBoxK->addItems(kList);
 }
 
 
