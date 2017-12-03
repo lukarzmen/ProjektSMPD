@@ -12,6 +12,8 @@
 #include "fischer.h"
 #include"database.h"
 #include "vectorutil.h"
+#include "objectconverter.h"
+#include "clasiffier.h"
 
 class ficherElement;
 namespace Ui {
@@ -54,6 +56,8 @@ private:
     Fischer fischer;
     Database database;
     vectorutil vectorUtil;
+    objectConverter converter;
+    int trainObjectSetAmount = 0;
 };
 
 #endif // MAINWINDOW_H

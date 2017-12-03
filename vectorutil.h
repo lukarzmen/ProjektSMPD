@@ -26,6 +26,7 @@ public:
     float vectorLenght(vector<float> &v1);
     float vectorDistance(vector<float> &v1, vector<float> &v2);
     std::string vectorToString(vector<int> &vectorToParse);
+    std::vector<float> calculateRowMeans(std::vector<std::vector<float>> &vectorsOfVectors);
 private:
      std::vector<float> vectorsSubstractAbs(vector<float> &v1, vector<float> &v2);
 };

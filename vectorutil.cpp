@@ -43,6 +43,22 @@ std::vector<std::vector<float>> vectorutil::calculateVariances(std::vector<std::
     return transponedVectorOfVectors;
 }
 
+std::vector<float> vectorutil::calculateRowMeans(std::vector<std::vector<float>> &vectorsOfVectors){
+    std::vector<float> featuresMeans;
+    int sizeX = vectorsOfVectors.size();
+    int sizeY = vectorsOfVectors.front().size();
+
+    for(int i =0; i< sizeX; i++)
+     {
+        float sum = 0.0f;
+        for(int j = 0; i < sizeY; j++)
+            sum+= vectorsOfVectors.at(i).at(j);
+         float mean =  sum/sizeY;
+         featuresMeans.push_back(mean);
+    }
+    return featuresMeans;
+}
+
 std::vector<float> vectorutil::calculateColumnMeans(std::vector<std::vector<float>> &vectorsOfVectors){
     std::vector<float> featuresMeans;
     int sizeX = vectorsOfVectors.size();

@@ -127,13 +127,11 @@ void MainWindow::on_CpushButtonTrain_clicked()
         QMessageBox::warning(this, "Warning", "Percentage value must be in range of 0 and 100");
         return;
 
-    }else{
-        int objectsAmount = database.getNoObjects();
-        int trainObjectSetAmount = (objectsAmount * percentageTrainSetOfDataset)/100.0;
-         ui->CtextBrowser->append("Object amount: " + QString::number(objectsAmount) + " Training set amount: " + QString::number(trainObjectSetAmount));
-         isEnabled = true;
     }
-
+    int objectsAmount = database.getNoObjects();
+    trainObjectSetAmount = (int)round(((float)objectsAmount * ((float)percentageTrainSetOfDataset/100.0)));
+     ui->CtextBrowser->append("Object amount: " + QString::number(objectsAmount) + " Training set amount: " + QString::number(trainObjectSetAmount));
+     isEnabled = true;
 
      ui->CpushButtonExecute->setEnabled(isEnabled);
 }
@@ -141,13 +139,33 @@ void MainWindow::on_CpushButtonTrain_clicked()
 void MainWindow::on_CpushButtonExecute_clicked()
 {
     int k = ui->CcomboBoxK->currentText().toInt();
-    int objectsCount = database.getNoObjects();
 
+    int objectsCount = database.getNoObjects();
+    int numberOfFeatures = database.getNoFeatures();
+    vector<Object> all_obj = database.getObjects();
+    int testSetAmount = objectsCount - trainObjectSetAmount;
+    std::vector<Object>  classified(all_obj.begin(), all_obj.begin() + testSetAmount);
+    std::vector<Object>  trainingSet(all_obj.begin()+ testSetAmount, all_obj.begin() + all_obj.size());
+    std::map<string, vector<vector<float>>> classifiedObjects = converter.getObjectsMap(classified);
+
+    clasiffier *clasifier = new clasiffier();
     double percentage = 0;
-    if(ui->CcomboBoxClassifiers->currentText()== "NN");
-    if(ui->CcomboBoxClassifiers->currentText()== "NM");
-    if(ui->CcomboBoxClassifiers->currentText()== "k-NN");
-    if(ui->CcomboBoxClassifiers->currentText()== "k-NM");
+    if(ui->CcomboBoxClassifiers->currentText()== "NN"){
+        ui->CtextBrowser->append("NN classifier choosen");
+        percentage = clasifier->NearestNeighbour(classifiedObjects, trainingSet);
+
+    }
+    if(ui->CcomboBoxClassifiers->currentText()== "NM"){
+        ui->CtextBrowser->append("NM classifier choosen");
+        percentage = clasifier->NearestMean(classifiedObjects, trainingSet);
+    }
+    if(ui->CcomboBoxClassifiers->currentText()== "k-NN"){
+        ui->CtextBrowser->append("k-NN classifier choosen");
+        percentage = clasifier->kNearestNeighbour(classifiedObjects, trainingSet, k);
+    }
+    if(ui->CcomboBoxClassifiers->currentText()== "k-NM"){
+        ui->CtextBrowser->append("k-NM classifier choosen");
+    }
 
     ui->CtextBrowser->append("Elements good classified: "  +  QString::number(percentage) + "%");
 
@@ -171,7 +189,7 @@ bool MainWindow::OpenFile(){
 }
 
 void MainWindow::addClassfiers(){
-    ui->CcomboBoxClassifiers->addItems((QStringList()<<"NN"<<"NM"<<"k-NN"<<"k-NM"));
+    ui->CcomboBoxClassifiers->addItems(QStringList()<<"NN"<<"NM"<<"k-NN"<<"k-NM");
 }
 
 void MainWindow::addItemsToKComboBox(int k){
