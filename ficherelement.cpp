@@ -2,9 +2,11 @@
 ficherElement::ficherElement(){
 
 }
+
 ficherElement::ficherElement(std::vector<int> arrayOfCombinations){
     this->arrayOfCombinations = arrayOfCombinations;
 }
+
 void ficherElement::setFischerValue(float fischerValue){
     this->fischerValue = fischerValue;
 }

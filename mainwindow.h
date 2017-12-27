@@ -57,7 +57,8 @@ private:
     Database database;
     vectorutil vectorUtil;
     objectConverter converter;
-    int trainObjectSetAmount = 0;
+    int testObjectSetAmount = 0;
+    ficherElement bestFischerElement;
 };
 
 #endif // MAINWINDOW_H

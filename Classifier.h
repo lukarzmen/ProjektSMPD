@@ -4,7 +4,7 @@ class Classifier
 {
 	
 	public:
-		Classifier( const database &trainSet, const database &testSet ) : trainingSet(trainSet), testSet(testSet){}
+                Classifier( const Database &trainSet, const Database &testSet ) : trainingSet(trainSet), testSet(testSet){}
 		
 		virtual void train() = 0;
 		
@@ -12,8 +12,8 @@ class Classifier
 		
 	private:
 	
-		database trainingSet;
-		database testSet;
+                Database trainingSet;
+                Database testSet;
 		
 	
-}
+};

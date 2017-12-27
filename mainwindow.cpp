@@ -74,7 +74,7 @@ void MainWindow::on_FSpushButtonCompute_clicked()
 
     if( ui->FSradioButtonFisher ->isChecked() && numberOfClass == 2)
     {       
-        ficherElement bestFischerElement = fischer.getBestFischerElement(database, dimension);
+        this->bestFischerElement = fischer.getBestFischerElement(database, dimension);
         float bestFischerValue = bestFischerElement.getFischerValue();
         std::vector<int> bestCombinationOfFeatures = bestFischerElement.getVectorOfFeatureCombinations();
         string bestCombinationOfFeaturesString = vectorUtil.vectorToString(bestCombinationOfFeatures);
@@ -83,7 +83,7 @@ void MainWindow::on_FSpushButtonCompute_clicked()
     }
     if(ui->FSradioButtonSFS -> isChecked() && numberOfClass == 2)
     {
-        ficherElement bestFischerElement = fischer.getBestFischerElementSFC(database, dimension);
+        this->bestFischerElement = fischer.getBestFischerElementSFC(database, dimension);
         float bestFischerValue = bestFischerElement.getFischerValue();
         std::vector<int> bestCombinationOfFeatures = bestFischerElement.getVectorOfFeatureCombinations();
         string bestCombinationOfFeaturesString = vectorUtil.vectorToString(bestCombinationOfFeatures);
@@ -129,8 +129,8 @@ void MainWindow::on_CpushButtonTrain_clicked()
 
     }
     int objectsAmount = database.getNoObjects();
-    trainObjectSetAmount = (int)round(((float)objectsAmount * ((float)percentageTrainSetOfDataset/100.0)));
-     ui->CtextBrowser->append("Object amount: " + QString::number(objectsAmount) + " Training set amount: " + QString::number(trainObjectSetAmount));
+    testObjectSetAmount = (int)round(((float)objectsAmount * ((float)percentageTrainSetOfDataset/100.0)));
+    ui->CtextBrowser->append("Object amount: " + QString::number(objectsAmount) + " Test set amount: " + QString::number(testObjectSetAmount));
      isEnabled = true;
 
      ui->CpushButtonExecute->setEnabled(isEnabled);
@@ -143,9 +143,26 @@ void MainWindow::on_CpushButtonExecute_clicked()
     int objectsCount = database.getNoObjects();
     int numberOfFeatures = database.getNoFeatures();
     vector<Object> all_obj = database.getObjects();
-    int testSetAmount = objectsCount - trainObjectSetAmount;
-    std::vector<Object>  classified(all_obj.begin(), all_obj.begin() + testSetAmount);
-    std::vector<Object>  trainingSet(all_obj.begin()+ testSetAmount, all_obj.begin() + all_obj.size());
+    vector<Object> objects_afterExtraction;
+    vector<int> bestFeatures = bestFischerElement.getVectorOfFeatureCombinations();
+
+    for(int i = 0; i < all_obj.size(); i++){
+        vector<float> newVectorOfFeatures;
+        vector<float> vectorOfFeatures = all_obj[i].getFeatures();
+        for(int j=0; j<bestFeatures.size(); j++)
+        {
+            int featureID = bestFeatures.at(j);
+            newVectorOfFeatures.push_back(vectorOfFeatures.at(featureID));
+        }
+
+         Object object_afterExtraction =  Object(all_obj[i].getClassName(), newVectorOfFeatures);
+         objects_afterExtraction.push_back(object_afterExtraction);
+    }
+
+    random_shuffle(objects_afterExtraction.begin(), objects_afterExtraction.end());
+
+    std::vector<Object>  classified(objects_afterExtraction.begin(), objects_afterExtraction.begin() + testObjectSetAmount);
+    std::vector<Object>  trainingSet(objects_afterExtraction.begin()+ testObjectSetAmount, objects_afterExtraction.begin() + all_obj.size());
     std::map<string, vector<vector<float>>> classifiedObjects = converter.getObjectsMap(classified);
 
     clasiffier *clasifier = new clasiffier();
@@ -165,6 +182,7 @@ void MainWindow::on_CpushButtonExecute_clicked()
     }
     if(ui->CcomboBoxClassifiers->currentText()== "k-NM"){
         ui->CtextBrowser->append("k-NM classifier choosen");
+        percentage = clasifier->kNearestMean(classifiedObjects, trainingSet, k);
     }
 
     ui->CtextBrowser->append("Elements good classified: "  +  QString::number(percentage) + "%");

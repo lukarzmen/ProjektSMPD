@@ -118,6 +118,7 @@ ficherElement Fischer::getBestFischerElementSFC(Database &database, int dimensio
 
         float maxFischerValue = std::numeric_limits<float>::min();
 
+        std::cout << "Wielkość mapy: " << combinationsMap.size() << std::endl;
         for (auto &combination : combinationsMap)
         {
             std::vector<int> arrayFeatureOfCombinations = combination.second.getVectorOfFeatureCombinations();
