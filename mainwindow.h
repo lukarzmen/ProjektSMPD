@@ -14,6 +14,7 @@
 #include "vectorutil.h"
 #include "objectconverter.h"
 #include "clasiffier.h"
+#include "classifierQuality.h"
 
 class ficherElement;
 namespace Ui {
@@ -37,6 +38,8 @@ private:
     void FSsetButtonState(bool state);
     bool OpenFile();
     void addItemsToKComboBox(int k);
+    void addItemsToInvervalsComboBox(int k);
+    bool isExtracted;
 
 
 private slots:

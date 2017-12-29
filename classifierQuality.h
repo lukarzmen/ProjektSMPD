@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include "clasiffier.h"
+#include "classifier_object.h"
 #define CLASSIFIERDATASETS_H
 
 using namespace std;
@@ -13,8 +14,8 @@ class ClassifierQuality
 {
 public:
     ClassifierQuality();
-    float BootstrapClassifier(vector<Object> all_obj, int intervalsAmount);
-    float CrossValidationClassifier(vector<Object> all_obj);
+    classifier_object Bootstrap(vector<Object> &all_obj);
+    vector<vector<Object>> CrossValidation(vector<Object> &all_obj, int intervalsAmount);
 private:
      clasiffier clasifier;
 };

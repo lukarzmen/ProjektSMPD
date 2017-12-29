@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     objectconverter.cpp \
     clasiffier.cpp \
     objectcluster.cpp \
-    classifierQuality.cpp
+    classifierQuality.cpp \
+    classifier_object.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
@@ -52,7 +53,8 @@ HEADERS  += mainwindow.h \
     objectconverter.h \
     clasiffier.h \
     objectcluster.h \
-    classifierQuality.h
+    classifierQuality.h \
+    classifier_object.h
 
 FORMS    += mainwindow.ui
 

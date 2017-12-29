@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     FSupdateButtonState();
     addClassfiers();
     addItemsToKComboBox(7);
+    addItemsToInvervalsComboBox(7);
 }
 
 MainWindow::~MainWindow()
@@ -89,6 +90,7 @@ void MainWindow::on_FSpushButtonCompute_clicked()
         string bestCombinationOfFeaturesString = vectorUtil.vectorToString(bestCombinationOfFeatures);
         ui->FStextBrowserDatabaseInfo->append("Best features combination for SFS: ["  +  QString::fromStdString(bestCombinationOfFeaturesString) + "] : " + QString::number(bestFischerValue));
     }
+    isExtracted = true;
 }
 
 
@@ -143,51 +145,114 @@ void MainWindow::on_CpushButtonExecute_clicked()
     int objectsCount = database.getNoObjects();
     int numberOfFeatures = database.getNoFeatures();
     vector<Object> all_obj = database.getObjects();
-    vector<Object> objects_afterExtraction;
-    vector<int> bestFeatures = bestFischerElement.getVectorOfFeatureCombinations();
 
-    for(int i = 0; i < all_obj.size(); i++){
-        vector<float> newVectorOfFeatures;
-        vector<float> vectorOfFeatures = all_obj[i].getFeatures();
-        for(int j=0; j<bestFeatures.size(); j++)
-        {
-            int featureID = bestFeatures.at(j);
-            newVectorOfFeatures.push_back(vectorOfFeatures.at(featureID));
+
+    vector<Object> objects_afterExtraction; // todo: jesli nie bylo ekstrakcji to after = before
+    if(isExtracted)
+        objects_afterExtraction = all_obj;
+    else
+    {
+        vector<int> bestFeatures = bestFischerElement.getVectorOfFeatureCombinations();
+
+        for(int i = 0; i < all_obj.size(); i++){
+            vector<float> newVectorOfFeatures;
+            vector<float> vectorOfFeatures = all_obj[i].getFeatures();
+            for(int j=0; j<bestFeatures.size(); j++)
+            {
+                int featureID = bestFeatures.at(j);
+                newVectorOfFeatures.push_back(vectorOfFeatures.at(featureID));
+            }
+
+             Object object_afterExtraction =  Object(all_obj[i].getClassName(), newVectorOfFeatures);
+             objects_afterExtraction.push_back(object_afterExtraction);
         }
-
-         Object object_afterExtraction =  Object(all_obj[i].getClassName(), newVectorOfFeatures);
-         objects_afterExtraction.push_back(object_afterExtraction);
     }
+
 
     random_shuffle(objects_afterExtraction.begin(), objects_afterExtraction.end());
+double percentage = 0;
+clasiffier *clasifier = new clasiffier();
 
-    std::vector<Object>  classified(objects_afterExtraction.begin(), objects_afterExtraction.begin() + testObjectSetAmount);
-    std::vector<Object>  trainingSet(objects_afterExtraction.begin()+ testObjectSetAmount, objects_afterExtraction.begin() + all_obj.size());
-    std::map<string, vector<vector<float>>> classifiedObjects = converter.getObjectsMap(classified);
+    if(ui->radioButtonNone->isChecked())
+    {
+        std::vector<Object>  classified(objects_afterExtraction.begin(), objects_afterExtraction.begin() + testObjectSetAmount);
+        std::vector<Object>  trainingSet(objects_afterExtraction.begin()+ testObjectSetAmount, objects_afterExtraction.begin() + all_obj.size());
+        std::map<string, vector<vector<float>>> classifiedObjects = converter.getObjectsMap(classified);
 
-    clasiffier *clasifier = new clasiffier();
-    double percentage = 0;
-    if(ui->CcomboBoxClassifiers->currentText()== "NN"){
-        ui->CtextBrowser->append("NN classifier choosen");
-        percentage = clasifier->NearestNeighbour(classifiedObjects, trainingSet);
+        if(ui->CcomboBoxClassifiers->currentText()== "NN"){
+            ui->CtextBrowser->append("NN classifier choosen");
+            percentage = clasifier->NearestNeighbour(classifiedObjects, trainingSet);
 
+        }
+        if(ui->CcomboBoxClassifiers->currentText()== "NM"){
+            ui->CtextBrowser->append("NM classifier choosen");
+            percentage = clasifier->NearestMean(classifiedObjects, trainingSet);
+        }
+        if(ui->CcomboBoxClassifiers->currentText()== "k-NN"){
+            ui->CtextBrowser->append("k-NN classifier choosen");
+            percentage = clasifier->kNearestNeighbour(classifiedObjects, trainingSet, k);
+        }
+        if(ui->CcomboBoxClassifiers->currentText()== "k-NM"){
+            ui->CtextBrowser->append("k-NM classifier choosen");
+            percentage = clasifier->kNearestMean(classifiedObjects, trainingSet, k);
+        }
     }
-    if(ui->CcomboBoxClassifiers->currentText()== "NM"){
-        ui->CtextBrowser->append("NM classifier choosen");
-        percentage = clasifier->NearestMean(classifiedObjects, trainingSet);
-    }
-    if(ui->CcomboBoxClassifiers->currentText()== "k-NN"){
-        ui->CtextBrowser->append("k-NN classifier choosen");
-        percentage = clasifier->kNearestNeighbour(classifiedObjects, trainingSet, k);
-    }
-    if(ui->CcomboBoxClassifiers->currentText()== "k-NM"){
-        ui->CtextBrowser->append("k-NM classifier choosen");
-        percentage = clasifier->kNearestMean(classifiedObjects, trainingSet, k);
-    }
+    if(ui -> radioButtonBootstrap->isChecked())
+    {
 
+        int k = ui->IntervalsComboBox->currentText().toInt();
+        ClassifierQuality classifierQuality;
+
+        double percentageSum;
+        for(int i =0; i< k; i++)
+        {
+            classifier_object sets = classifierQuality.Bootstrap(objects_afterExtraction);
+            vector<Object> trainingSet = sets.getTrainingSet();
+            vector<Object> testSet = sets.getTestSet();
+            std::map<string, vector<vector<float>>> classifiedObjects = converter.getObjectsMap(trainingSet);
+
+            if(ui->CcomboBoxClassifiers->currentText()== "NN")
+                percentageSum += clasifier->NearestNeighbour(classifiedObjects, testSet);
+
+
+            if(ui->CcomboBoxClassifiers->currentText()== "NM")
+                percentageSum += clasifier->NearestMean(classifiedObjects, testSet);
+
+            if(ui->CcomboBoxClassifiers->currentText()== "k-NN")
+                percentageSum += clasifier->kNearestNeighbour(classifiedObjects, testSet, k);
+        }
+        percentage = percentageSum/k;
+    }
+    if(ui -> radioButtonCrossvalidation->isChecked())
+    {
+        int intervals = ui->IntervalsComboBox->currentText().toInt();
+        ClassifierQuality classifierQuality;
+        vector<vector<Object>> sets = classifierQuality.CrossValidation(objects_afterExtraction, intervals);
+
+        double percentageSum = 0.0;
+        for(int i = 0; i < sets.size(); i++)
+        {
+            vector<Object> testSet = sets.at(i);
+            vector<Object> trainingSet;
+
+            for(int j = 0; j < sets.size(); j++)
+            {
+                if(i != j)
+                    trainingSet.insert(trainingSet.end(), sets.at(j).begin(), sets.at(j).end());
+            }
+            std::map<string, vector<vector<float>>> classifiedObjects = converter.getObjectsMap(trainingSet);
+            if(ui->CcomboBoxClassifiers->currentText()== "NN")
+                percentageSum += clasifier->NearestNeighbour(classifiedObjects, testSet);
+            if(ui->CcomboBoxClassifiers->currentText()== "NM")
+                percentageSum += clasifier->NearestMean(classifiedObjects, testSet);
+            if(ui->CcomboBoxClassifiers->currentText()== "k-NN")
+                percentageSum += clasifier->kNearestNeighbour(classifiedObjects, testSet, k);
+
+        }
+        percentage = percentageSum/intervals;
+    }
+    delete clasifier;
     ui->CtextBrowser->append("Elements good classified: "  +  QString::number(percentage) + "%");
-
-
 }
 
 bool MainWindow::OpenFile(){
@@ -217,6 +282,12 @@ void MainWindow::addItemsToKComboBox(int k){
     ui->CcomboBoxK->addItems(itemsList);
 }
 
+void MainWindow::addItemsToInvervalsComboBox(int k){
+    QStringList itemsList = QStringList();
+    for(int i =1; i<=k; i++)
+        itemsList.append(QString::number(i));
+    ui->IntervalsComboBox->addItems(itemsList);
+}
 
 
 
