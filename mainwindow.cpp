@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     FSupdateButtonState();
     addClassfiers();
     addItemsToKComboBox(7);
-    addItemsToInvervalsComboBox(7);
+    addItemsToInvervalsComboBox(10);
 }
 
 MainWindow::~MainWindow()

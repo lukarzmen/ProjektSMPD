@@ -59,9 +59,16 @@ vector<vector<Object>> ClassifierQuality::CrossValidation(vector<Object> &all_ob
     for(int i=0; i< vectorSize; i+=partSize){
         int end = i+partSize;
         if(end >vectorSize )
+        {
             end=vectorSize;
+            vector<Object> lastElement = sliceOfVectors.back();
+            lastElement.insert(lastElement.begin(), all_obj.begin() + i, all_obj.begin() + end);
+            break;
+        }
+
         vector<Object> slice(all_obj.begin() + i, all_obj.begin() + end);
         sliceOfVectors.push_back(slice);
+
     }
 
     return sliceOfVectors;
