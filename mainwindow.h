@@ -40,6 +40,7 @@ private:
     void addItemsToKComboBox(int k);
     void addItemsToInvervalsComboBox(int k);
     bool isExtracted;
+    vector<Object> objects_afterExtraction;
 
 
 private slots:
@@ -62,6 +63,9 @@ private:
     objectConverter converter;
     int testObjectSetAmount = 0;
     ficherElement bestFischerElement;
+    vector<vector<Object>> crossvalidationSets;
+    int intervals;
+    vector<classifier_object> bootstrapSets;
 };
 
 #endif // MAINWINDOW_H

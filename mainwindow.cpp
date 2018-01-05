@@ -135,7 +135,48 @@ void MainWindow::on_CpushButtonTrain_clicked()
     ui->CtextBrowser->append("Object amount: " + QString::number(objectsAmount) + " Test set amount: " + QString::number(testObjectSetAmount));
      isEnabled = true;
 
-     ui->CpushButtonExecute->setEnabled(isEnabled);
+     vector<Object> all_obj = database.getObjects();
+
+
+      // todo: jesli nie bylo ekstrakcji to after = before
+     if(isExtracted)
+         objects_afterExtraction = all_obj;
+     else
+     {
+         vector<int> bestFeatures = bestFischerElement.getVectorOfFeatureCombinations();
+
+         for(int i = 0; i < all_obj.size(); i++){
+             vector<float> newVectorOfFeatures;
+             vector<float> vectorOfFeatures = all_obj[i].getFeatures();
+             for(int j=0; j<bestFeatures.size(); j++)
+             {
+                 int featureID = bestFeatures.at(j);
+                 newVectorOfFeatures.push_back(vectorOfFeatures.at(featureID));
+             }
+
+              Object object_afterExtraction =  Object(all_obj[i].getClassName(), newVectorOfFeatures);
+              objects_afterExtraction.push_back(object_afterExtraction);
+         }
+     }
+
+
+     random_shuffle(objects_afterExtraction.begin(), objects_afterExtraction.end());
+
+     ClassifierQuality classifierQuality;
+     intervals = ui->IntervalsComboBox->currentText().toInt();
+     if(ui -> radioButtonCrossvalidation->isChecked())
+     {
+         crossvalidationSets = classifierQuality.CrossValidation(objects_afterExtraction, intervals);
+     }
+     if(ui -> radioButtonBootstrap->isChecked())
+     {
+         for(int i =0; i< intervals; i++)
+         {
+             classifier_object sets = classifierQuality.Bootstrap(objects_afterExtraction);
+             bootstrapSets.push_back(sets);
+         }
+     }
+    ui->CpushButtonExecute->setEnabled(isEnabled);
 }
 
 void MainWindow::on_CpushButtonExecute_clicked()
@@ -144,39 +185,14 @@ void MainWindow::on_CpushButtonExecute_clicked()
 
     int objectsCount = database.getNoObjects();
     int numberOfFeatures = database.getNoFeatures();
-    vector<Object> all_obj = database.getObjects();
 
-
-    vector<Object> objects_afterExtraction; // todo: jesli nie bylo ekstrakcji to after = before
-    if(isExtracted)
-        objects_afterExtraction = all_obj;
-    else
-    {
-        vector<int> bestFeatures = bestFischerElement.getVectorOfFeatureCombinations();
-
-        for(int i = 0; i < all_obj.size(); i++){
-            vector<float> newVectorOfFeatures;
-            vector<float> vectorOfFeatures = all_obj[i].getFeatures();
-            for(int j=0; j<bestFeatures.size(); j++)
-            {
-                int featureID = bestFeatures.at(j);
-                newVectorOfFeatures.push_back(vectorOfFeatures.at(featureID));
-            }
-
-             Object object_afterExtraction =  Object(all_obj[i].getClassName(), newVectorOfFeatures);
-             objects_afterExtraction.push_back(object_afterExtraction);
-        }
-    }
-
-
-    random_shuffle(objects_afterExtraction.begin(), objects_afterExtraction.end());
 double percentage = 0;
 clasiffier *clasifier = new clasiffier();
 
     if(ui->radioButtonNone->isChecked())
     {
         std::vector<Object>  classified(objects_afterExtraction.begin(), objects_afterExtraction.begin() + testObjectSetAmount);
-        std::vector<Object>  trainingSet(objects_afterExtraction.begin()+ testObjectSetAmount, objects_afterExtraction.begin() + all_obj.size());
+        std::vector<Object>  trainingSet(objects_afterExtraction.begin()+ testObjectSetAmount, objects_afterExtraction.begin() + database.getNoObjects());
         std::map<string, vector<vector<float>>> classifiedObjects = converter.getObjectsMap(classified);
 
         if(ui->CcomboBoxClassifiers->currentText()== "NN"){
@@ -199,14 +215,10 @@ clasiffier *clasifier = new clasiffier();
     }
     if(ui -> radioButtonBootstrap->isChecked())
     {
-
-        int k = ui->IntervalsComboBox->currentText().toInt();
-        ClassifierQuality classifierQuality;
-
         double percentageSum;
-        for(int i =0; i< k; i++)
+        for(int i =0; i< intervals; i++)
         {
-            classifier_object sets = classifierQuality.Bootstrap(objects_afterExtraction);
+            classifier_object sets = bootstrapSets.at(i);
             vector<Object> trainingSet = sets.getTrainingSet();
             vector<Object> testSet = sets.getTestSet();
             std::map<string, vector<vector<float>>> classifiedObjects = converter.getObjectsMap(trainingSet);
@@ -214,31 +226,26 @@ clasiffier *clasifier = new clasiffier();
             if(ui->CcomboBoxClassifiers->currentText()== "NN")
                 percentageSum += clasifier->NearestNeighbour(classifiedObjects, testSet);
 
-
             if(ui->CcomboBoxClassifiers->currentText()== "NM")
                 percentageSum += clasifier->NearestMean(classifiedObjects, testSet);
 
             if(ui->CcomboBoxClassifiers->currentText()== "k-NN")
                 percentageSum += clasifier->kNearestNeighbour(classifiedObjects, testSet, k);
         }
-        percentage = percentageSum/k;
+        percentage = percentageSum/intervals;
     }
     if(ui -> radioButtonCrossvalidation->isChecked())
     {
-        int intervals = ui->IntervalsComboBox->currentText().toInt();
-        ClassifierQuality classifierQuality;
-        vector<vector<Object>> sets = classifierQuality.CrossValidation(objects_afterExtraction, intervals);
-
         double percentageSum = 0.0;
-        for(int i = 0; i < sets.size(); i++)
+        for(int i = 0; i < crossvalidationSets.size(); i++)
         {
-            vector<Object> testSet = sets.at(i);
+            vector<Object> testSet = crossvalidationSets.at(i);
             vector<Object> trainingSet;
 
-            for(int j = 0; j < sets.size(); j++)
+            for(int j = 0; j < crossvalidationSets.size(); j++)
             {
                 if(i != j)
-                    trainingSet.insert(trainingSet.end(), sets.at(j).begin(), sets.at(j).end());
+                    trainingSet.insert(trainingSet.end(), crossvalidationSets.at(j).begin(), crossvalidationSets.at(j).end());
             }
             std::map<string, vector<vector<float>>> classifiedObjects = converter.getObjectsMap(trainingSet);
             if(ui->CcomboBoxClassifiers->currentText()== "NN")
